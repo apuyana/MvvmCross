@@ -1,15 +1,11 @@
-﻿#region Copyright
-// <copyright file="MvxWinRTPage.cs" company="Cirrious">
-// (c) Copyright Cirrious. http://www.cirrious.com
-// This source is subject to the Microsoft Public License (Ms-PL)
-// Please see license.txt on http://opensource.org/licenses/ms-pl.html
-// All other rights reserved.
-// </copyright>
+﻿// MvxWinRTPage.cs
+// (c) Copyright Cirrious Ltd. http://www.cirrious.com
+// MvvmCross is licensed using Microsoft Public License (Ms-PL)
+// Contributions and inspirations noted in readme.md and license.txt
 // 
-// Project Lead - Stuart Lodge, Cirrious. http://www.cirrious.com
-#endregion
+// Project Lead - Stuart Lodge, @slodge, me@slodge.com
+
 using System;
-using Cirrious.MvvmCross.ExtensionMethods;
 using Cirrious.MvvmCross.Interfaces.ViewModels;
 using Cirrious.MvvmCross.Views;
 using Cirrious.MvvmCross.WinRT.Interfaces;
@@ -20,7 +16,7 @@ namespace Cirrious.MvvmCross.WinRT.Views
 {
     public abstract class MvxWinRTPage
         : Page
-        , IMvxWinRTView
+          , IMvxWinRTView
     {
         private IMvxViewModel _viewModel;
 
@@ -44,7 +40,7 @@ namespace Cirrious.MvvmCross.WinRT.Views
         public void ClearBackStack()
         {
             throw new NotImplementedException();
-        /*
+            /*
             // note - we do *not* use CanGoBack here - as that seems to always returns true!
             while (NavigationService.BackStack.Any())
                 NavigationService.RemoveBackEntry();
@@ -59,7 +55,6 @@ namespace Cirrious.MvvmCross.WinRT.Views
 
             IsVisible = true;
 
-#warning I'm not 100% happy with the use of created and destroyed here - cross platform code - huh?
             this.OnViewCreate(e.Parameter as MvxShowViewModelRequest);
         }
 
@@ -68,7 +63,6 @@ namespace Cirrious.MvvmCross.WinRT.Views
             IsVisible = false;
             base.OnNavigatedFrom(e);
 
-#warning I'm not 100% happy with the use of created and destroyed here - cross platform code - huh?
             if (e.NavigationMode == NavigationMode.Back)
                 this.OnViewDestroy();
         }

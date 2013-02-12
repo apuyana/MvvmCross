@@ -1,13 +1,9 @@
-#region Copyright
-// <copyright file="MvxBindingLayoutInflatorFactory.cs" company="Cirrious">
-// (c) Copyright Cirrious. http://www.cirrious.com
-// This source is subject to the Microsoft Public License (Ms-PL)
-// Please see license.txt on http://opensource.org/licenses/ms-pl.html
-// All other rights reserved.
-// </copyright>
+// MvxBindingLayoutInflatorFactory.cs
+// (c) Copyright Cirrious Ltd. http://www.cirrious.com
+// MvvmCross is licensed using Microsoft Public License (Ms-PL)
+// Contributions and inspirations noted in readme.md and license.txt
 // 
-// Project Lead - Stuart Lodge, Cirrious. http://www.cirrious.com
-#endregion
+// Project Lead - Stuart Lodge, @slodge, me@slodge.com
 
 using System;
 using System.Collections.Generic;
@@ -22,27 +18,27 @@ using Cirrious.MvvmCross.Binding.Interfaces;
 using Cirrious.MvvmCross.ExtensionMethods;
 using Cirrious.MvvmCross.Interfaces.Platform.Diagnostics;
 using Cirrious.MvvmCross.Interfaces.ServiceProvider;
+using Exception = System.Exception;
 using Object = Java.Lang.Object;
 
 namespace Cirrious.MvvmCross.Binding.Droid.Binders
 {
     public class MvxBindingLayoutInflatorFactory
         : Object
-        , LayoutInflater.IFactory
-        , IMvxServiceConsumer<IMvxBinder>
-        , IMvxServiceConsumer<IMvxViewTypeResolver>
+          , LayoutInflater.IFactory
+          , IMvxServiceConsumer
     {
         private readonly LayoutInflater _layoutInflater;
         private readonly object _source;
 
-        private readonly Dictionary<View, IList<IMvxUpdateableBinding>> _viewBindings 
-                            = new Dictionary<View, IList<IMvxUpdateableBinding>>();
+        private readonly Dictionary<View, IList<IMvxUpdateableBinding>> _viewBindings
+            = new Dictionary<View, IList<IMvxUpdateableBinding>>();
 
         private IMvxViewTypeResolver _viewTypeResolver;
 
         public MvxBindingLayoutInflatorFactory(
-                        object source, 
-                        LayoutInflater layoutInflater)
+            object source,
+            LayoutInflater layoutInflater)
         {
             _source = source;
             _layoutInflater = layoutInflater;
@@ -75,33 +71,38 @@ namespace Cirrious.MvvmCross.Binding.Droid.Binders
 
         private void BindView(View view, Context context, IAttributeSet attrs)
         {
-            var typedArray = context.ObtainStyledAttributes(attrs, MvxAndroidBindingResource.Instance.BindingStylableGroupId);
-
-            int numStyles = typedArray.IndexCount;
-            for (var i = 0; i < numStyles; ++i)
+            using (
+                var typedArray = context.ObtainStyledAttributes(attrs,
+                                                                MvxAndroidBindingResource.Instance
+                                                                                         .BindingStylableGroupId))
             {
-                var attributeId = typedArray.GetIndex(i);
-
-                if (attributeId == MvxAndroidBindingResource.Instance.BindingBindId)
+                int numStyles = typedArray.IndexCount;
+                for (var i = 0; i < numStyles; ++i)
                 {
-                    try
+                    var attributeId = typedArray.GetIndex(i);
+
+                    if (attributeId == MvxAndroidBindingResource.Instance.BindingBindId)
                     {
-                        var bindingText = typedArray.GetString(attributeId);
-                        var newBindings = this.GetService<IMvxBinder>().Bind(_source, view, bindingText);
-                        if (newBindings != null)
+                        try
                         {
-                            var asList = newBindings.ToList();
-                            _viewBindings[view] = asList;
+                            var bindingText = typedArray.GetString(attributeId);
+                            var newBindings = this.GetService<IMvxBinder>().Bind(_source, view, bindingText);
+                            if (newBindings != null)
+                            {
+                                var asList = newBindings.ToList();
+                                _viewBindings[view] = asList;
+                            }
+                        }
+                        catch (Exception exception)
+                        {
+                            MvxBindingTrace.Trace(MvxTraceLevel.Error, "Exception thrown during the view binding {0}",
+                                                  exception.ToLongString());
+                            throw;
                         }
                     }
-                    catch (Exception exception)
-                    {
-                        MvxBindingTrace.Trace(MvxTraceLevel.Error, "Exception thrown during the view binding {0}", exception.ToLongString());
-                        throw;
-                    }
                 }
+                typedArray.Recycle();
             }
-            typedArray.Recycle();
         }
 
         private View CreateView(string name, Context context, IAttributeSet attrs)
@@ -120,7 +121,8 @@ namespace Cirrious.MvvmCross.Binding.Droid.Binders
                 var view = Activator.CreateInstance(viewType, context, attrs) as View;
                 if (view == null)
                 {
-                    MvxBindingTrace.Trace(MvxTraceLevel.Error, "Unable to load view {0} from type {1}", name, viewType.FullName);
+                    MvxBindingTrace.Trace(MvxTraceLevel.Error, "Unable to load view {0} from type {1}", name,
+                                          viewType.FullName);
                 }
                 return view;
             }
@@ -130,7 +132,9 @@ namespace Cirrious.MvvmCross.Binding.Droid.Binders
             }
             catch (Exception exception)
             {
-                MvxBindingTrace.Trace(MvxTraceLevel.Error, "Exception during creation of {0} from type {1} - exception {2}", name, viewType.FullName, exception.ToLongString());
+                MvxBindingTrace.Trace(MvxTraceLevel.Error,
+                                      "Exception during creation of {0} from type {1} - exception {2}", name,
+                                      viewType.FullName, exception.ToLongString());
                 return null;
             }
         }

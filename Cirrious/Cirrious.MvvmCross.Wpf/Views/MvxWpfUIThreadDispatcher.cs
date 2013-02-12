@@ -1,4 +1,11 @@
-﻿using System;
+﻿// MvxWpfUIThreadDispatcher.cs
+// (c) Copyright Cirrious Ltd. http://www.cirrious.com
+// MvvmCross is licensed using Microsoft Public License (Ms-PL)
+// Contributions and inspirations noted in readme.md and license.txt
+// 
+// Project Lead - Stuart Lodge, @slodge, me@slodge.com
+
+using System;
 using System.Reflection;
 using System.Threading;
 using System.Windows.Threading;
@@ -49,7 +56,7 @@ namespace Cirrious.MvvmCross.Wpf.Views
             }
             catch (Exception exception)
             {
-#warning Should we mask all these exceptions?
+                // note - all exceptions masked
                 MvxTrace.Trace("Exception masked " + exception.ToLongString());
             }
         }

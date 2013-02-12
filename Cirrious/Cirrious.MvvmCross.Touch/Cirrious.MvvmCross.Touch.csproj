@@ -10,8 +10,6 @@
     <OutputType>Library</OutputType>
     <RootNamespace>Cirrious.MvvmCross.Touch</RootNamespace>
     <AssemblyName>Cirrious.MvvmCross.Touch</AssemblyName>
-    <TargetFrameworkVersion>v1.0</TargetFrameworkVersion>
-    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <NoStdLib>True</NoStdLib>
@@ -65,7 +63,6 @@
     <Compile Include="Views\MvxTouchViewDispatcherProvider.cs" />
     <Compile Include="Views\MvxTouchViewsContainer.cs" />
     <Compile Include="ExtensionMethods\MvxTouchColorExtensionMethods.cs" />
-    <Compile Include="Views\MvxTouchViewAnimation.cs" />
     <Compile Include="Interfaces\IMvxTouchNavigator.cs" />
     <Compile Include="ExtensionMethods\MvxTouchUIViewControllerExtensions.cs" />
     <Compile Include="Views\MvxTouchViewDispatcher.cs" />
@@ -78,6 +75,7 @@
     <Compile Include="Views\Presenters\MvxModalSupportTouchViewPresenter.cs" />
     <Compile Include="Views\Presenters\MvxTouchViewPresenter.cs" />
     <Compile Include="Platform\MvxBaseTouchSetup.cs" />
+    <Compile Include="Views\MvxTouchCollectionViewController.cs" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup />

@@ -1,13 +1,9 @@
-﻿#region Copyright
-// <copyright file="MvxWindowsPhoneResourceLoader.cs" company="Cirrious">
-// (c) Copyright Cirrious. http://www.cirrious.com
-// This source is subject to the Microsoft Public License (Ms-PL)
-// Please see license.txt on http://opensource.org/licenses/ms-pl.html
-// All other rights reserved.
-// </copyright>
+﻿// MvxWindowsPhoneResourceLoader.cs
+// (c) Copyright Cirrious Ltd. http://www.cirrious.com
+// MvvmCross is licensed using Microsoft Public License (Ms-PL)
+// Contributions and inspirations noted in readme.md and license.txt
 // 
-// Project Lead - Stuart Lodge, Cirrious. http://www.cirrious.com
-#endregion
+// Project Lead - Stuart Lodge, @slodge, me@slodge.com
 
 using System;
 using System.IO;
@@ -20,7 +16,6 @@ namespace Cirrious.MvvmCross.Plugins.ResourceLoader.WindowsPhone
 
         public override void GetResourceStream(string resourcePath, Action<Stream> streamAction)
         {
-#warning ? need to check and clarify what exceptions can be thrown here!
             var streamInfo = System.Windows.Application.GetResourceStream(new Uri(resourcePath, UriKind.Relative));
             if (streamInfo != null)
                 streamAction(streamInfo.Stream);

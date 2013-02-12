@@ -1,13 +1,9 @@
-#region Copyright
-// <copyright file="MvxApplicationObject.cs" company="Cirrious">
-// (c) Copyright Cirrious. http://www.cirrious.com
-// This source is subject to the Microsoft Public License (Ms-PL)
-// Please see license.txt on http://opensource.org/licenses/ms-pl.html
-// All other rights reserved.
-// </copyright>
+// MvxApplicationObject.cs
+// (c) Copyright Cirrious Ltd. http://www.cirrious.com
+// MvvmCross is licensed using Microsoft Public License (Ms-PL)
+// Contributions and inspirations noted in readme.md and license.txt
 // 
-// Project Lead - Stuart Lodge, Cirrious. http://www.cirrious.com
-#endregion
+// Project Lead - Stuart Lodge, @slodge, me@slodge.com
 
 using System;
 using System.Collections.Generic;
@@ -18,7 +14,7 @@ using Cirrious.MvvmCross.Views;
 
 namespace Cirrious.MvvmCross.ViewModels
 {
-    public class MvxApplicationObject 
+    public class MvxApplicationObject
         : MvxNotifyPropertyChanged
     {
         protected MvxApplicationObject()
@@ -29,7 +25,7 @@ namespace Cirrious.MvvmCross.ViewModels
 
         protected bool RequestNavigate<TViewModel>() where TViewModel : IMvxViewModel
         {
-			return RequestNavigate<TViewModel>(null, false, MvxRequestedBy.UserAction);
+            return RequestNavigate<TViewModel>(null, false, MvxRequestedBy.UserAction);
         }
 
         protected bool RequestNavigate(Type viewModelType)
@@ -54,12 +50,20 @@ namespace Cirrious.MvvmCross.ViewModels
 
         protected bool RequestNavigate(Type viewModelType, object parameterValuesObject)
         {
-            return RequestNavigate(viewModelType, parameterValuesObject.ToSimplePropertyDictionary(), false, MvxRequestedBy.UserAction);
+            return RequestNavigate(viewModelType, parameterValuesObject.ToSimplePropertyDictionary(), false,
+                                   MvxRequestedBy.UserAction);
         }
 
-        protected bool RequestNavigate<TViewModel>(object parameterValuesObject, bool clearTop, MvxRequestedBy requestedBy) where TViewModel : IMvxViewModel
+        protected bool RequestNavigate<TViewModel>(object parameterValuesObject, bool clearTop,
+                                                   MvxRequestedBy requestedBy) where TViewModel : IMvxViewModel
         {
             return RequestNavigate<TViewModel>(parameterValuesObject.ToSimplePropertyDictionary(), clearTop);
+        }
+
+        protected bool RequestNavigate<TViewModel>(IDictionary<string, object> parameterValues)
+            where TViewModel : IMvxViewModel
+        {
+            return RequestNavigate<TViewModel>(parameterValues.ToSimpleStringPropertyDictionary(), false);
         }
 
         protected bool RequestNavigate<TViewModel>(IDictionary<string, string> parameterValues)
@@ -74,13 +78,15 @@ namespace Cirrious.MvvmCross.ViewModels
             return RequestNavigate<TViewModel>(parameterValues, clearTop, MvxRequestedBy.UserAction);
         }
 
-        protected bool RequestNavigate<TViewModel>(IDictionary<string, string> parameterValues, bool clearTop, MvxRequestedBy requestedBy)
+        protected bool RequestNavigate<TViewModel>(IDictionary<string, string> parameterValues, bool clearTop,
+                                                   MvxRequestedBy requestedBy)
             where TViewModel : IMvxViewModel
         {
-            return RequestNavigate(typeof(TViewModel), parameterValues, clearTop, requestedBy);
+            return RequestNavigate(typeof (TViewModel), parameterValues, clearTop, requestedBy);
         }
 
-        protected bool RequestNavigate(Type viewModelType, IDictionary<string, string> parameterValues, bool clearTop, MvxRequestedBy requestedBy)
+        protected bool RequestNavigate(Type viewModelType, IDictionary<string, string> parameterValues, bool clearTop,
+                                       MvxRequestedBy requestedBy)
         {
             MvxTrace.TaggedTrace("Navigation", "Navigate to " + viewModelType.Name + " with args");
             if (ViewDispatcher != null)
@@ -96,7 +102,7 @@ namespace Cirrious.MvvmCross.ViewModels
         protected bool RequestClose(IMvxViewModel toClose)
         {
             MvxTrace.TaggedTrace("Navigation", "Close requested");
-			if (ViewDispatcher != null)
+            if (ViewDispatcher != null)
                 return ViewDispatcher.RequestClose(toClose);
 
             return false;

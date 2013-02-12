@@ -1,3 +1,10 @@
+// MvxDialogActivityView.cs
+// (c) Copyright Cirrious Ltd. http://www.cirrious.com
+// MvvmCross is licensed using Microsoft Public License (Ms-PL)
+// Contributions and inspirations noted in readme.md and license.txt
+// 
+// Project Lead - Stuart Lodge, @slodge, me@slodge.com
+
 using System;
 using Android.App;
 using Android.Content;
@@ -8,15 +15,13 @@ using Cirrious.MvvmCross.ExtensionMethods;
 using Cirrious.MvvmCross.Interfaces.ServiceProvider;
 using Cirrious.MvvmCross.Interfaces.ViewModels;
 using Cirrious.MvvmCross.Platform.Diagnostics;
-using CrossUI.Droid;
 using CrossUI.Droid.Dialog;
 
 namespace Cirrious.MvvmCross.Dialog.Droid.Views
 {
-    public abstract class MvxDialogActivityView <TViewModel>
+    public abstract class MvxDialogActivityView<TViewModel>
         : DialogActivity
           , IMvxAndroidView<TViewModel>
-          , IMvxServiceConsumer<IMvxIntentResultSink>
         where TViewModel : class, IMvxViewModel
     {
         protected MvxDialogActivityView()
@@ -119,7 +124,8 @@ namespace Cirrious.MvvmCross.Dialog.Droid.Views
 
         protected override void OnActivityResult(int requestCode, Result resultCode, Intent data)
         {
-            this.GetService<IMvxIntentResultSink>().OnResult(new MvxIntentResultEventArgs(requestCode, resultCode, data));
+            this.GetService<IMvxIntentResultSink>()
+                .OnResult(new MvxIntentResultEventArgs(requestCode, resultCode, data));
             base.OnActivityResult(requestCode, resultCode, data);
         }
 

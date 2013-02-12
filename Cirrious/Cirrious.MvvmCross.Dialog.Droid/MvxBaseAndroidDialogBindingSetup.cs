@@ -1,3 +1,10 @@
+// MvxBaseAndroidDialogBindingSetup.cs
+// (c) Copyright Cirrious Ltd. http://www.cirrious.com
+// MvvmCross is licensed using Microsoft Public License (Ms-PL)
+// Contributions and inspirations noted in readme.md and license.txt
+// 
+// Project Lead - Stuart Lodge, @slodge, me@slodge.com
+
 using Android.Content;
 using Cirrious.MvvmCross.Binding.Bindings.Target.Construction;
 using Cirrious.MvvmCross.Binding.Droid;
@@ -10,7 +17,7 @@ namespace Cirrious.MvvmCross.Dialog.Droid
     public abstract class MvxBaseAndroidDialogBindingSetup
         : MvxBaseAndroidBindingSetup, IMvxServiceProducer
     {
-        protected MvxBaseAndroidDialogBindingSetup(Context applicationContext) 
+        protected MvxBaseAndroidDialogBindingSetup(Context applicationContext)
             : base(applicationContext)
         {
         }
@@ -30,16 +37,16 @@ namespace Cirrious.MvvmCross.Dialog.Droid
         protected virtual void InitializeDialogBinding()
         {
 #warning How to intialise DroidResources?!
-#warning How to intialise DroidResources?!
-#warning How to intialise DroidResources?!
-#warning How to intialise DroidResources?!
-#warning How to intialise DroidResources?!
             //DroidResources.Initialise(typeof(Resource.Layout));
         }
 
-        protected override void FillTargetFactories(Cirrious.MvvmCross.Binding.Interfaces.Bindings.Target.Construction.IMvxTargetBindingFactoryRegistry registry)
+        protected override void FillTargetFactories(
+            Cirrious.MvvmCross.Binding.Interfaces.Bindings.Target.Construction.IMvxTargetBindingFactoryRegistry registry)
         {
-            registry.RegisterFactory(new MvxPropertyInfoTargetBindingFactory(typeof(ValueElement), "Value", (element, propertyInfo) => new MvxElementValueTargetBinding(element, propertyInfo)));
+            registry.RegisterFactory(new MvxPropertyInfoTargetBindingFactory(typeof (ValueElement), "Value",
+                                                                             (element, propertyInfo) =>
+                                                                             new MvxElementValueTargetBinding(element,
+                                                                                                              propertyInfo)));
             base.FillTargetFactories(registry);
         }
     }

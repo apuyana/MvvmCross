@@ -1,4 +1,10 @@
-﻿#warning TODO - add explanation of copyrights - MS-Pl vs MIT vs custom...
+﻿// BaseClasses.cs
+// (c) Copyright Cirrious Ltd. http://www.cirrious.com
+// MvvmCross is licensed using Microsoft Public License (Ms-PL)
+// Contributions and inspirations noted in readme.md and license.txt
+// 
+// Project Lead - Stuart Lodge, @slodge, me@slodge.com
+// THIS FILE FULLY ACKNOWLEDGES:
 
 //
 // Copyright (c) 2009-2011 Krueger Systems, Inc.
@@ -23,11 +29,7 @@
 //
 
 using System;
-using System.Runtime.InteropServices;
 using System.Collections.Generic;
-using System.Reflection;
-using System.Linq;
-using System.Linq.Expressions;
 
 namespace Cirrious.MvvmCross.Plugins.Sqlite
 {
@@ -97,7 +99,10 @@ namespace Cirrious.MvvmCross.Plugins.Sqlite
         public override bool Unique
         {
             get { return true; }
-            set { /* throw?  */ }
+            set
+            {
+                /* throw?  */
+            }
         }
     }
 
@@ -133,9 +138,15 @@ namespace Cirrious.MvvmCross.Plugins.Sqlite
 
         int CreateTable<T>();
 
+        int DropTable<T>();
+
+        ITableMapping GetMapping(Type type);
+
         ISQLiteCommand CreateCommand(string cmdText, params object[] ps);
 
         int Execute(string query, params object[] args);
+
+        T ExecuteScalar<T>(string query, params object[] args);
 
         List<T> Query<T>(string query, params object[] args) where T : new();
 
@@ -148,6 +159,10 @@ namespace Cirrious.MvvmCross.Plugins.Sqlite
         ITableQuery<T> Table<T>() where T : new();
 
         T Get<T>(object pk) where T : new();
+
+        T Find<T>(object pk) where T : new();
+
+        object Find(object pk, ITableMapping map);
 
         bool IsInTransaction { get; }
 
@@ -174,16 +189,22 @@ namespace Cirrious.MvvmCross.Plugins.Sqlite
         int Update(object obj, Type objType);
 
         int Delete(object objectToDelete);
+
         int Delete<T>(object primaryKey);
-        
+
         void Close();
     }
 
-    public interface ITableMapping { }
+    public interface ITableMapping
+    {
+        string TableName { get; }
+    }
 
-    public interface ISQLiteCommand { }
+    public interface ISQLiteCommand
+    {
+    }
 
     public interface ITableQuery<T> : IEnumerable<T> where T : new()
-    {        
+    {
     }
 }

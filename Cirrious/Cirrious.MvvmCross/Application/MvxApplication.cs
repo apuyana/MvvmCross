@@ -1,13 +1,9 @@
-﻿#region Copyright
-// <copyright file="MvxApplication.cs" company="Cirrious">
-// (c) Copyright Cirrious. http://www.cirrious.com
-// This source is subject to the Microsoft Public License (Ms-PL)
-// Please see license.txt on http://opensource.org/licenses/ms-pl.html
-// All other rights reserved.
-// </copyright>
+﻿// MvxApplication.cs
+// (c) Copyright Cirrious Ltd. http://www.cirrious.com
+// MvvmCross is licensed using Microsoft Public License (Ms-PL)
+// Contributions and inspirations noted in readme.md and license.txt
 // 
-// Project Lead - Stuart Lodge, Cirrious. http://www.cirrious.com
-#endregion
+// Project Lead - Stuart Lodge, @slodge, me@slodge.com
 
 using System;
 using System.Collections.Generic;
@@ -22,8 +18,8 @@ using Cirrious.MvvmCross.Views;
 namespace Cirrious.MvvmCross.Application
 {
     public abstract class MvxApplication
-        :  IMvxViewModelLocatorFinder
-        , IMvxViewModelLocatorStore
+        : IMvxViewModelLocatorFinder
+          , IMvxViewModelLocatorStore
     {
         private readonly ViewModelLocatorLookup _lookup = new ViewModelLocatorLookup();
 
@@ -76,19 +72,19 @@ namespace Cirrious.MvvmCross.Application
 
         private class ViewModelLocatorLookup
             : Dictionary<Type, IMvxViewModelLocator>
-            , IMvxServiceConsumer<IMvxViewModelLocatorAnalyser>
+            , IMvxServiceConsumer
         {
             public IMvxViewModelLocator Find(MvxShowViewModelRequest request)
             {
                 IMvxViewModelLocator toReturn;
-                if (!TryGetValue(request.ViewModelType, out toReturn))
+				if (!TryGetValue(request.ViewModelType, out toReturn))
                     return null;
                 return toReturn;
             }
 
             public void Add(IMvxViewModelLocator locator)
             {
-                var analyser = this.GetService();
+				var analyser = this.GetService<IMvxViewModelLocatorAnalyser>();
                 var methods = analyser.GenerateLocatorMethods(locator.GetType());
                 foreach (var method in methods)
                 {

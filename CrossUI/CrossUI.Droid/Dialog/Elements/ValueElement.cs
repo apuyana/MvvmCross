@@ -1,3 +1,10 @@
+// ValueElement.cs
+// (c) Copyright Cirrious Ltd. http://www.cirrious.com
+// MvvmCross is licensed using Microsoft Public License (Ms-PL)
+// Contributions and inspirations noted in readme.md and license.txt
+// 
+// Project Lead - Stuart Lodge, @slodge, me@slodge.com
+
 using System;
 using Android.Views;
 
@@ -17,7 +24,11 @@ namespace CrossUI.Droid.Dialog.Elements
         public object Value
         {
             get { return _value; }
-            set { _value = value; ActOnCurrentAttachedCell(UpdateDetailDisplay); }
+            set
+            {
+                _value = value;
+                ActOnCurrentAttachedCell(UpdateDetailDisplay);
+            }
         }
 
         private object _value;
@@ -43,7 +54,7 @@ namespace CrossUI.Droid.Dialog.Elements
 
         public new TValueType Value
         {
-            get { return (TValueType)base.Value; }
+            get { return (TValueType) base.Value; }
             set { base.Value = value; }
         }
 

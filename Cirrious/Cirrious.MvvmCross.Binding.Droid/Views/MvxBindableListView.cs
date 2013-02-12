@@ -1,13 +1,9 @@
-#region Copyright
-// <copyright file="MvxBindableListView.cs" company="Cirrious">
-// (c) Copyright Cirrious. http://www.cirrious.com
-// This source is subject to the Microsoft Public License (Ms-PL)
-// Please see license.txt on http://opensource.org/licenses/ms-pl.html
-// All other rights reserved.
-// </copyright>
+// MvxBindableListView.cs
+// (c) Copyright Cirrious Ltd. http://www.cirrious.com
+// MvvmCross is licensed using Microsoft Public License (Ms-PL)
+// Contributions and inspirations noted in readme.md and license.txt
 // 
-// Project Lead - Stuart Lodge, Cirrious. http://www.cirrious.com
-#endregion
+// Project Lead - Stuart Lodge, @slodge, me@slodge.com
 
 using System.Collections;
 using System.Windows.Input;
@@ -29,10 +25,14 @@ namespace Cirrious.MvvmCross.Binding.Droid.Views
         public MvxBindableListView(Context context, IAttributeSet attrs, MvxBindableListAdapter adapter)
             : base(context, attrs)
         {
-            var itemTemplateId = MvxBindableListViewHelpers.ReadAttributeValue(context, attrs, MvxAndroidBindingResource.Instance.BindableListViewStylableGroupId, MvxAndroidBindingResource.Instance.BindableListItemTemplateId);
+            var itemTemplateId = MvxBindableListViewHelpers.ReadAttributeValue(context, attrs,
+                                                                               MvxAndroidBindingResource.Instance
+                                                                                                        .BindableListViewStylableGroupId,
+                                                                               MvxAndroidBindingResource.Instance
+                                                                                                        .BindableListItemTemplateId);
             adapter.ItemTemplateId = itemTemplateId;
             Adapter = adapter;
-            SetupItemClickListeners();            
+            SetupItemClickListeners();
         }
 
         public new MvxBindableListAdapter Adapter
@@ -60,7 +60,7 @@ namespace Cirrious.MvvmCross.Binding.Droid.Views
             get { return Adapter.ItemsSource; }
             set { Adapter.ItemsSource = value; }
         }
-        
+
         public int ItemTemplateId
         {
             get { return Adapter.ItemTemplateId; }
@@ -82,17 +82,14 @@ namespace Cirrious.MvvmCross.Binding.Droid.Views
             if (command == null)
                 return;
 
-            var item = Adapter.GetItem(position) as MvxJavaContainer;
+            var item = Adapter.GetRawItem(position);
             if (item == null)
                 return;
 
-            if (item.Object == null)
+            if (!command.CanExecute(item))
                 return;
 
-            if (!command.CanExecute(item.Object))
-                return;
-
-            command.Execute(item.Object);
+            command.Execute(item);
         }
     }
 }

@@ -1,13 +1,9 @@
-#region Copyright
-// <copyright file="MvxBindableListAdapter.cs" company="Cirrious">
-// (c) Copyright Cirrious. http://www.cirrious.com
-// This source is subject to the Microsoft Public License (Ms-PL)
-// Please see license.txt on http://opensource.org/licenses/ms-pl.html
-// All other rights reserved.
-// </copyright>
+// MvxBindableListAdapter.cs
+// (c) Copyright Cirrious Ltd. http://www.cirrious.com
+// MvvmCross is licensed using Microsoft Public License (Ms-PL)
+// Contributions and inspirations noted in readme.md and license.txt
 // 
-// Project Lead - Stuart Lodge, Cirrious. http://www.cirrious.com
-#endregion
+// Project Lead - Stuart Lodge, @slodge, me@slodge.com
 
 using System.Collections;
 using System.Collections.Specialized;
@@ -15,8 +11,8 @@ using Android;
 using Android.Content;
 using Android.Views;
 using Android.Widget;
-using Cirrious.MvvmCross.Binding.Droid.Interfaces.Views;
 using Cirrious.MvvmCross.Binding.Attributes;
+using Cirrious.MvvmCross.Binding.Droid.Interfaces.Views;
 using Cirrious.MvvmCross.Binding.ExtensionMethods;
 using Cirrious.MvvmCross.Exceptions;
 using Cirrious.MvvmCross.Interfaces.Platform.Diagnostics;
@@ -24,7 +20,7 @@ using Java.Lang;
 
 namespace Cirrious.MvvmCross.Binding.Droid.Views
 {
-    public class MvxBindableListAdapter 
+    public class MvxBindableListAdapter
         : BaseAdapter
     {
         private readonly IMvxBindingActivity _bindingActivity;
@@ -38,12 +34,20 @@ namespace Cirrious.MvvmCross.Binding.Droid.Views
             _context = context;
             _bindingActivity = context as IMvxBindingActivity;
             if (_bindingActivity == null)
-                throw new MvxException("MvxBindableListView can only be used within a Context which supports IMvxBindingActivity");
+                throw new MvxException(
+                    "MvxBindableListView can only be used within a Context which supports IMvxBindingActivity");
             SimpleViewLayoutId = Resource.Layout.SimpleListItem1;
         }
 
-        protected Context Context { get { return _context; } }
-        protected IMvxBindingActivity BindingActivity { get { return _bindingActivity; } }
+        protected Context Context
+        {
+            get { return _context; }
+        }
+
+        protected IMvxBindingActivity BindingActivity
+        {
+            get { return _bindingActivity; }
+        }
 
         public int SimpleViewLayoutId { get; set; }
 
@@ -51,9 +55,7 @@ namespace Cirrious.MvvmCross.Binding.Droid.Views
         public IEnumerable ItemsSource
         {
             get { return _itemsSource; }
-            set {
-                SetItemsSource(value);
-            }
+            set { SetItemsSource(value); }
         }
 
         public int ItemTemplateId
@@ -100,7 +102,8 @@ namespace Cirrious.MvvmCross.Binding.Droid.Views
                 existingObservable.CollectionChanged -= OnItemsSourceCollectionChanged;
             _itemsSource = value;
             if (_itemsSource != null && !(_itemsSource is IList))
-                MvxBindingTrace.Trace(MvxTraceLevel.Warning, "Binding to IEnumerable rather than IList - this can be inefficient, especially for large lists");
+                MvxBindingTrace.Trace(MvxTraceLevel.Warning,
+                                      "Binding to IEnumerable rather than IList - this can be inefficient, especially for large lists");
             var newObservable = _itemsSource as INotifyCollectionChanged;
             if (newObservable != null)
                 newObservable.CollectionChanged += OnItemsSourceCollectionChanged;
@@ -122,14 +125,17 @@ namespace Cirrious.MvvmCross.Binding.Droid.Views
             return _itemsSource.GetPosition(item);
         }
 
-        public System.Object GetSourceItem(int position)
+        public System.Object GetRawItem(int position)
         {
             return _itemsSource.ElementAt(position);
         }
 
         public override Object GetItem(int position)
         {
-            return new MvxJavaContainer<object>(GetSourceItem(position));
+            // we return null to Java here
+            // - see @JonPryor's answer in http://stackoverflow.com/questions/13842864/why-does-the-gref-go-too-high-when-i-put-a-mvxbindablespinner-in-a-mvxbindableli/13995199#comment19319057_13995199
+            return null;
+            //return new MvxJavaContainer<object>(GetRawItem(position));
         }
 
         public override long GetItemId(int position)
@@ -164,7 +170,7 @@ namespace Cirrious.MvvmCross.Binding.Droid.Views
             }
             */
 
-            var source = GetSourceItem(position);
+            var source = GetRawItem(position);
 
             return GetBindableView(convertView, source, templateId);
         }

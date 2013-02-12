@@ -1,41 +1,26 @@
-#region Copyright
-// <copyright file="MvxBindableTableViewSource.cs" company="Cirrious">
-// (c) Copyright Cirrious. http://www.cirrious.com
-// This source is subject to the Microsoft Public License (Ms-PL)
-// Please see license.txt on http://opensource.org/licenses/ms-pl.html
-// All other rights reserved.
-// </copyright>
+// MvxBindableTableViewSource.cs
+// (c) Copyright Cirrious Ltd. http://www.cirrious.com
+// MvvmCross is licensed using Microsoft Public License (Ms-PL)
+// Contributions and inspirations noted in readme.md and license.txt
 // 
-// Project Lead - Stuart Lodge, Cirrious. http://www.cirrious.com
-#endregion
+// Project Lead - Stuart Lodge, @slodge, me@slodge.com
 
 using System.Collections;
-using System.Collections.Generic;
 using System.Collections.Specialized;
 using Cirrious.MvvmCross.Binding.Attributes;
 using Cirrious.MvvmCross.Binding.ExtensionMethods;
-using Cirrious.MvvmCross.Binding.Interfaces;
 using MonoTouch.Foundation;
 using MonoTouch.UIKit;
+using System.Collections.Generic;
 
 namespace Cirrious.MvvmCross.Binding.Touch.Views
 {
-    public class MvxBindableTableViewSource : MvxBaseBindableTableViewSource
+    public abstract class MvxBindableTableViewSource : MvxBaseBindableTableViewSource
     {
         private IEnumerable _itemsSource;
 
         protected MvxBindableTableViewSource(UITableView tableView)
             : base(tableView)
-        {
-        }
-
-        public MvxBindableTableViewSource(UITableView tableView, UITableViewCellStyle style, NSString cellIdentifier, string bindingText, UITableViewCellAccessory tableViewCellAccessory = UITableViewCellAccessory.None)
-            : base(tableView, style, cellIdentifier, bindingText, tableViewCellAccessory)
-        {
-        }
-
-        public MvxBindableTableViewSource(UITableView tableView, UITableViewCellStyle style, NSString cellIdentifier, IEnumerable<MvxBindingDescription> descriptions, UITableViewCellAccessory tableViewCellAccessory = UITableViewCellAccessory.None)
-            : base(tableView, style, cellIdentifier, descriptions, tableViewCellAccessory)
         {
         }
 
@@ -55,7 +40,7 @@ namespace Cirrious.MvvmCross.Binding.Touch.Views
                 collectionChanged = _itemsSource as INotifyCollectionChanged;
                 if (collectionChanged != null)
                     collectionChanged.CollectionChanged += CollectionChangedOnCollectionChanged;
-                ReloadTableData ();
+                ReloadTableData();
             }
         }
 
@@ -67,10 +52,74 @@ namespace Cirrious.MvvmCross.Binding.Touch.Views
             return ItemsSource.ElementAt(indexPath.Row);
         }
 
-        protected virtual void CollectionChangedOnCollectionChanged(object sender, NotifyCollectionChangedEventArgs notifyCollectionChangedEventArgs)
-        {
-			ReloadTableData ();
-        }
+		public bool UseAnimations { get; set; }
+		public UITableViewRowAnimation AddAnimation { get; set; }
+		public UITableViewRowAnimation RemoveAnimation { get; set; }
+		public UITableViewRowAnimation ReplaceAnimation { get; set; }
+
+		protected virtual void CollectionChangedOnCollectionChanged (object sender,
+		                                                              NotifyCollectionChangedEventArgs args)
+		{
+			if (!UseAnimations) 
+			{
+				ReloadTableData();
+				return;
+			}
+
+			if (TryDoAnimatedChange(args))
+			{
+				return;
+			}
+
+			ReloadTableData();
+		}
+
+		protected bool TryDoAnimatedChange (NotifyCollectionChangedEventArgs args)
+		{
+			switch (args.Action) {
+			case NotifyCollectionChangedAction.Add: {
+				var newIndexPaths = CreateNSIndexPathArray (args.NewStartingIndex, args.NewItems.Count);
+				TableView.InsertRows (newIndexPaths, AddAnimation);
+				return true;
+			}
+			case NotifyCollectionChangedAction.Remove: {
+				var oldIndexPaths = CreateNSIndexPathArray(args.OldStartingIndex, args.OldItems.Count);
+				TableView.DeleteRows (oldIndexPaths, RemoveAnimation);
+				return true;
+			}
+			case NotifyCollectionChangedAction.Move: {
+				if (args.NewItems.Count != 1 && args.OldItems.Count != 1)
+					return false;
+
+				var oldIndexPath = NSIndexPath.FromItemSection (args.OldStartingIndex, 0);
+				var newIndexPath = NSIndexPath.FromItemSection (args.NewStartingIndex, 0);
+				TableView.MoveRow (oldIndexPath, newIndexPath);
+				return true;
+			}
+			case NotifyCollectionChangedAction.Replace: 
+			{
+				if (args.NewItems.Count != args.OldItems.Count)
+					return false;
+
+				var indexPath = NSIndexPath.FromItemSection (args.NewStartingIndex, 0);
+				TableView.ReloadRows (new[] {
+					indexPath
+				}, UITableViewRowAnimation.Fade);
+				return true;;
+			}
+			default:
+				return false;
+			}
+		}
+
+		protected static NSIndexPath[] CreateNSIndexPathArray (int startingPosition, int count)
+		{
+			var newIndexPaths = new NSIndexPath[count];
+			for (var i = 0; i < count; i++) {
+				newIndexPaths[i] = NSIndexPath.FromItemSection (i + startingPosition, 0);
+			}
+			return newIndexPaths;
+		}
 
         public override int RowsInSection(UITableView tableview, int section)
         {

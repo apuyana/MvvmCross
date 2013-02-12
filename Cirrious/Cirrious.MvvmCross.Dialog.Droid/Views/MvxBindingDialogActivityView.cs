@@ -1,17 +1,24 @@
+// MvxBindingDialogActivityView.cs
+// (c) Copyright Cirrious Ltd. http://www.cirrious.com
+// MvvmCross is licensed using Microsoft Public License (Ms-PL)
+// Contributions and inspirations noted in readme.md and license.txt
+// 
+// Project Lead - Stuart Lodge, @slodge, me@slodge.com
+
 using System;
 using System.Collections.Generic;
 using Android.OS;
 using Android.Views;
 using Cirrious.MvvmCross.Binding.Droid.Binders;
-using Cirrious.MvvmCross.Binding.Droid.Interfaces.Views;
 using Cirrious.MvvmCross.Binding.Interfaces;
+using Cirrious.MvvmCross.Dialog.Droid.Interfaces;
 using Cirrious.MvvmCross.Interfaces.ViewModels;
 
 namespace Cirrious.MvvmCross.Dialog.Droid.Views
 {
     public abstract class MvxBindingDialogActivityView<TViewModel>
         : MvxDialogActivityView<TViewModel>
-        , IMvxBindingActivity
+        , IMvxBindingDialogActivityView 
         where TViewModel : class, IMvxViewModel
     {
         #region Not quite the same Code shared across all binding activities - I hate this cut and paste
@@ -92,7 +99,8 @@ namespace Cirrious.MvvmCross.Dialog.Droid.Views
         {
             get
             {
-                throw new InvalidOperationException("LayoutInflater must not be accessed directly in MvxBindingActivityView - use IMvxBindingActivity.BindingInflate or IMvxBindingActivity.NonBindingInflate instead");
+                throw new InvalidOperationException(
+                    "LayoutInflater must not be accessed directly in MvxBindingActivityView - use IMvxBindingActivity.BindingInflate or IMvxBindingActivity.NonBindingInflate instead");
             }
         }
 
@@ -131,7 +139,8 @@ namespace Cirrious.MvvmCross.Dialog.Droid.Views
             SetContentView(view);
         }
 
-        private View CommonInflate(int resourceId, ViewGroup viewGroup, Func<LayoutInflater, MvxBindingLayoutInflatorFactory> factoryProvider)
+        private View CommonInflate(int resourceId, ViewGroup viewGroup,
+                                   Func<LayoutInflater, MvxBindingLayoutInflatorFactory> factoryProvider)
         {
             var layoutInflator = base.LayoutInflater;
             using (var clone = layoutInflator.CloneInContext(this))
