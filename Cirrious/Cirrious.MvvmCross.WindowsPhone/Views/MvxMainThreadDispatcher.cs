@@ -10,6 +10,7 @@
 using System;
 using System.Windows.Threading;
 using Cirrious.MvvmCross.Interfaces.Views;
+using System.Windows;
 
 #endregion
 
@@ -28,19 +29,15 @@ namespace Cirrious.MvvmCross.WindowsPhone.Views
 
         public bool RequestMainThreadAction(Action action)
         {
-            return InvokeOrBeginInvoke(action);
+            bool execute = (action != null) && (Deployment.Current.Dispatcher != null);
+            if (execute)
+            {
+                Deployment.Current.Dispatcher.BeginInvoke(action);
+            }
+
+            return execute;
         }
 
         #endregion
-
-        private bool InvokeOrBeginInvoke(Action action)
-        {
-            if (_uiDispatcher.CheckAccess())
-                action();
-            else
-                _uiDispatcher.BeginInvoke(action);
-
-            return true;
-        }
     }
 }

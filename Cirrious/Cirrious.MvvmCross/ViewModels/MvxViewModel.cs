@@ -12,9 +12,11 @@ using System.Windows.Input;
 using Cirrious.MvvmCross.Commands;
 using Cirrious.MvvmCross.Interfaces.ViewModels;
 using Cirrious.MvvmCross.Interfaces.Views;
+using System.Runtime.Serialization;
 
 namespace Cirrious.MvvmCross.ViewModels
 {
+    [DataContract]
     public class MvxViewModel
         : MvxApplicationObject
           , IMvxViewModel

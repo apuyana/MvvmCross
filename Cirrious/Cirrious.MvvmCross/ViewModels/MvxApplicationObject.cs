@@ -11,9 +11,11 @@ using Cirrious.MvvmCross.ExtensionMethods;
 using Cirrious.MvvmCross.Interfaces.ViewModels;
 using Cirrious.MvvmCross.Platform.Diagnostics;
 using Cirrious.MvvmCross.Views;
+using System.Runtime.Serialization;
 
 namespace Cirrious.MvvmCross.ViewModels
 {
+    [DataContract]
     public class MvxApplicationObject
         : MvxNotifyPropertyChanged
     {

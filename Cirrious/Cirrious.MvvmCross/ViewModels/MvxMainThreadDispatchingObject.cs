@@ -9,9 +9,11 @@ using System;
 using Cirrious.MvvmCross.ExtensionMethods;
 using Cirrious.MvvmCross.Interfaces.ServiceProvider;
 using Cirrious.MvvmCross.Interfaces.Views;
+using System.Runtime.Serialization;
 
 namespace Cirrious.MvvmCross.ViewModels
 {
+    [DataContract]
     public abstract class MvxMainThreadDispatchingObject
         : IMvxServiceConsumer
     {

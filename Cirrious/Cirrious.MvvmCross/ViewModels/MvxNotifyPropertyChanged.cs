@@ -9,9 +9,11 @@ using System;
 using System.ComponentModel;
 using System.Linq.Expressions;
 using Cirrious.MvvmCross.ExtensionMethods;
+using System.Runtime.Serialization;
 
 namespace Cirrious.MvvmCross.ViewModels
 {
+    [DataContract]
     public abstract class MvxNotifyPropertyChanged
         : MvxMainThreadDispatchingObject, INotifyPropertyChanged
     {
