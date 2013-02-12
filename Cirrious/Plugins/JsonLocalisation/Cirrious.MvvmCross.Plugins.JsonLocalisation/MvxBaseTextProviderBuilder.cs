@@ -1,13 +1,9 @@
-#region Copyright
-// <copyright file="MvxTextProviderBuilder.cs" company="Cirrious">
-// (c) Copyright Cirrious. http://www.cirrious.com
-// This source is subject to the Microsoft Public License (Ms-PL)
-// Please see license.txt on http://opensource.org/licenses/ms-pl.html
-// All other rights reserved.
-// </copyright>
+// MvxBaseTextProviderBuilder.cs
+// (c) Copyright Cirrious Ltd. http://www.cirrious.com
+// MvvmCross is licensed using Microsoft Public License (Ms-PL)
+// Contributions and inspirations noted in readme.md and license.txt
 // 
-// Project Lead - Stuart Lodge, Cirrious. http://www.cirrious.com
-#endregion
+// Project Lead - Stuart Lodge, @slodge, me@slodge.com
 
 using System;
 using System.Collections.Generic;
@@ -17,7 +13,7 @@ using Cirrious.MvvmCross.Platform.Diagnostics;
 
 namespace Cirrious.MvvmCross.Plugins.JsonLocalisation
 {
-    public abstract class MvxTextProviderBuilder 
+    public abstract class MvxTextProviderBuilder
         : IMvxTextProviderBuilder
     {
         private readonly string _generalNamespaceKey;
@@ -28,9 +24,9 @@ namespace Cirrious.MvvmCross.Plugins.JsonLocalisation
         {
         }
 
-        protected MvxTextProviderBuilder(string generalNamespaceKey, string rootFolderForResources, MvxJsonDictionaryTextProvider provider)
+        protected MvxTextProviderBuilder(string generalNamespaceKey, string rootFolderForResources,
+                                         MvxJsonDictionaryTextProvider provider)
         {
-#warning Error masking turned on by default - check this is OK
             _generalNamespaceKey = generalNamespaceKey;
             _rootFolderForResources = rootFolderForResources;
 
@@ -50,11 +46,13 @@ namespace Cirrious.MvvmCross.Plugins.JsonLocalisation
             {
                 try
                 {
-                    TextProvider.LoadJsonFromResource(_generalNamespaceKey, kvp.Key, GetResourceFilePath(whichLocalisationFolder, kvp.Value));
+                    TextProvider.LoadJsonFromResource(_generalNamespaceKey, kvp.Key,
+                                                      GetResourceFilePath(whichLocalisationFolder, kvp.Value));
                 }
                 catch (Exception exception)
                 {
-                    MvxTrace.Trace(MvxTraceLevel.Warning, "Language file could not be loaded for {0}.{1} - {2}", whichLocalisationFolder, kvp.Key, exception.ToLongString());
+                    MvxTrace.Trace(MvxTraceLevel.Warning, "Language file could not be loaded for {0}.{1} - {2}",
+                                   whichLocalisationFolder, kvp.Key, exception.ToLongString());
                 }
             }
         }

@@ -46,11 +46,13 @@
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
+    <Compile Include="MvxTouchBindingBuilder.cs" />
     <Compile Include="MvxTouchBindingSetup.cs" />
     <Compile Include="Interfaces\Views\IMvxBindableView.cs" />
     <Compile Include="Interfaces\IMvxBindingTouchView.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Target\MvxUISwitchOnTargetBinding.cs" />
+    <Compile Include="Views\MvxSimpleBindableTableViewSource.cs" />
     <Compile Include="Views\MvxBindingTouchTabBarViewController.cs" />
     <Compile Include="Views\MvxBaseBindableTableViewSource.cs" />
     <Compile Include="Views\MvxBindableTableViewCell.cs" />
@@ -65,6 +67,10 @@
     <Compile Include="Target\MvxUIButtonTitleTargetBinding.cs" />
     <Compile Include="Views\MvxTouchImageView.cs" />
     <Compile Include="Views\MvxBaseBindableTableViewCell.cs" />
+    <Compile Include="Views\MvxBindingTouchCollectionViewController.cs" />
+    <Compile Include="Views\MvxBaseBindableCollectionViewSource.cs" />
+    <Compile Include="Views\MvxBaseBindableCollectionViewCell.cs" />
+    <Compile Include="Views\MvxBindableCollectionViewSource.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Cirrious.MvvmCross.Binding\Cirrious.MvvmCross.Binding.csproj">

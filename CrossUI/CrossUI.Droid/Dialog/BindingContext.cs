@@ -1,14 +1,13 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Reflection;
-using System.Text;
-using Android.Content;
-using Android.Widget;
+﻿// BindingContext.cs
+// (c) Copyright Cirrious Ltd. http://www.cirrious.com
+// MvvmCross is licensed using Microsoft Public License (Ms-PL)
+// Contributions and inspirations noted in readme.md and license.txt
+// 
+// Project Lead - Stuart Lodge, @slodge, me@slodge.com
 
-namespace FooBar.Dialog.Droid
+namespace CrossUI.Droid.Dialog
 {
-#warning BindingContext is now broken - sorry!
+#warning BindingContext is now removed in our fork of Dialog - sorry!
 #if false
     public class BindingContext : IDisposable
     {

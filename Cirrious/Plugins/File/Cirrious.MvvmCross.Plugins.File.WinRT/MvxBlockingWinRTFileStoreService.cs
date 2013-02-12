@@ -1,4 +1,9 @@
-﻿#warning Copyright needed
+﻿// MvxBlockingWinRTFileStoreService.cs
+// (c) Copyright Cirrious Ltd. http://www.cirrious.com
+// MvvmCross is licensed using Microsoft Public License (Ms-PL)
+// Contributions and inspirations noted in readme.md and license.txt
+// 
+// Project Lead - Stuart Lodge, @slodge, me@slodge.com
 
 using System;
 using System.Collections.Generic;
@@ -19,13 +24,13 @@ namespace Cirrious.MvvmCross.Plugins.File.WinRT
         {
             string result = null;
             var toReturn = TryReadFileCommon(path, (stream) =>
-            {
-                using (var streamReader = new StreamReader(stream))
                 {
-                    result = streamReader.ReadToEnd();
-                }
-                return true;
-            });
+                    using (var streamReader = new StreamReader(stream))
+                    {
+                        result = streamReader.ReadToEnd();
+                    }
+                    return true;
+                });
             contents = result;
             return toReturn;
         }
@@ -34,17 +39,17 @@ namespace Cirrious.MvvmCross.Plugins.File.WinRT
         {
             Byte[] result = null;
             var toReturn = TryReadFileCommon(path, (stream) =>
-            {
-                using (var binaryReader = new BinaryReader(stream))
                 {
-                    var memoryBuffer = new byte[stream.Length];
-                    if (binaryReader.Read(memoryBuffer, 0, memoryBuffer.Length) != memoryBuffer.Length)
-                        return false;
+                    using (var binaryReader = new BinaryReader(stream))
+                    {
+                        var memoryBuffer = new byte[stream.Length];
+                        if (binaryReader.Read(memoryBuffer, 0, memoryBuffer.Length) != memoryBuffer.Length)
+                            return false;
 
-                    result = memoryBuffer;
-                    return true;
-                }
-            });
+                        result = memoryBuffer;
+                        return true;
+                    }
+                });
             contents = result;
             return toReturn;
         }
@@ -58,25 +63,25 @@ namespace Cirrious.MvvmCross.Plugins.File.WinRT
         public void WriteFile(string path, string contents)
         {
             WriteFileCommon(path, (stream) =>
-            {
-                using (var sw = new StreamWriter(stream))
                 {
-                    sw.Write(contents);
-                    sw.Flush();
-                }
-            });
+                    using (var sw = new StreamWriter(stream))
+                    {
+                        sw.Write(contents);
+                        sw.Flush();
+                    }
+                });
         }
 
         public void WriteFile(string path, IEnumerable<byte> contents)
         {
             WriteFileCommon(path, (stream) =>
-            {
-                using (var binaryWriter = new BinaryWriter(stream))
                 {
-                    binaryWriter.Write(contents.ToArray());
-                    binaryWriter.Flush();
-                }
-            });
+                    using (var binaryWriter = new BinaryWriter(stream))
+                    {
+                        binaryWriter.Write(contents.ToArray());
+                        binaryWriter.Flush();
+                    }
+                });
         }
 
         public void WriteFile(string path, Action<System.IO.Stream> writeMethod)
@@ -86,7 +91,6 @@ namespace Cirrious.MvvmCross.Plugins.File.WinRT
 
         public bool TryMove(string from, string to, bool deleteExistingTo)
         {
-#warning Consider changing TryMove to a `void Move(from, to, replaceIfExisting)` signature?
             try
             {
                 StorageFile fromFile;
@@ -105,7 +109,7 @@ namespace Cirrious.MvvmCross.Plugins.File.WinRT
                     try
                     {
                         var toFile = StorageFileFromRelativePath(to);
-                        toFile.DeleteAsync();
+                        toFile.DeleteAsync().Await();
                     }
                     catch (FileNotFoundException)
                     {
@@ -140,6 +144,11 @@ namespace Cirrious.MvvmCross.Plugins.File.WinRT
             }
         }
 
+        public bool FolderExists(string folderPath)
+        {
+            throw new NotImplementedException("Need to implement this - See EnsureFolderExists");
+        }
+
         public string PathCombine(string items0, string items1)
         {
             return Path.Combine(items0, items1);
@@ -162,6 +171,11 @@ namespace Cirrious.MvvmCross.Plugins.File.WinRT
         {
             var file = StorageFileFromRelativePath(path);
             file.DeleteAsync().Await();
+        }
+
+        public void DeleteFolder(string folderPath, bool recursive)
+        {
+            throw new NotImplementedException("Need to implement this - See EnsureFolderExists");
         }
 
         #endregion
@@ -210,7 +224,7 @@ namespace Cirrious.MvvmCross.Plugins.File.WinRT
             var fullPath = ToFullPath(path);
             var directory = Path.GetDirectoryName(fullPath);
             var fileName = Path.GetFileName(fullPath);
-            var storageFolder = StorageFolder.GetFolderFromPathAsync(directory).Await();            
+            var storageFolder = StorageFolder.GetFolderFromPathAsync(directory).Await();
             var storageFile = storageFolder.CreateFileAsync(fileName).Await();
             return storageFile;
         }

@@ -1,13 +1,9 @@
-#region Copyright
-// <copyright file="MvxTargetBindingFactoryRegistry.cs" company="Cirrious">
-// (c) Copyright Cirrious. http://www.cirrious.com
-// This source is subject to the Microsoft Public License (Ms-PL)
-// Please see license.txt on http://opensource.org/licenses/ms-pl.html
-// All other rights reserved.
-// </copyright>
+// MvxTargetBindingFactoryRegistry.cs
+// (c) Copyright Cirrious Ltd. http://www.cirrious.com
+// MvvmCross is licensed using Microsoft Public License (Ms-PL)
+// Contributions and inspirations noted in readme.md and license.txt
 // 
-// Project Lead - Stuart Lodge, Cirrious. http://www.cirrious.com
-#endregion
+// Project Lead - Stuart Lodge, @slodge, me@slodge.com
 
 using System;
 using System.Collections.Generic;
@@ -24,23 +20,24 @@ namespace Cirrious.MvvmCross.Binding.Bindings.Target.Construction
 
         #region IMvxTargetBindingFactoryRegistry Members
 
-        public IMvxTargetBinding CreateBinding(object target, MvxBindingDescription description)
+        public IMvxTargetBinding CreateBinding(object target, string targetName)
         {
-            var factory = FindSpecificFactory(target.GetType(), description.TargetName);
+            var factory = FindSpecificFactory(target.GetType(), targetName);
             if (factory != null)
-                return factory.CreateBinding(target, description);
+                return factory.CreateBinding(target, targetName);
 
-            var targetPropertyInfo = target.GetType().GetProperty(description.TargetName);
+            var targetPropertyInfo = target.GetType().GetProperty(targetName);
             if (targetPropertyInfo != null)
             {
                 return new MvxPropertyInfoTargetBinding(target, targetPropertyInfo);
             }
 
-            var targetEventInfo = target.GetType().GetEvent(description.TargetName);
+            var targetEventInfo = target.GetType().GetEvent(targetName);
             if (targetEventInfo != null)
             {
-#warning Handle other event types here - possibly another lookup table so people can register their own?
-                if (targetEventInfo.EventHandlerType == typeof(EventHandler))
+                // we only handle EventHandler's here
+                // other event types will need to be handled by custom bindings
+                if (targetEventInfo.EventHandlerType == typeof (EventHandler))
                     return new MvxEventHandlerEventInfoTargetBinding(target, targetEventInfo);
             }
 

@@ -1,13 +1,9 @@
-#region Copyright
-// <copyright file="MvxBaseAndroidBindingSetup.cs" company="Cirrious">
-// (c) Copyright Cirrious. http://www.cirrious.com
-// This source is subject to the Microsoft Public License (Ms-PL)
-// Please see license.txt on http://opensource.org/licenses/ms-pl.html
-// All other rights reserved.
-// </copyright>
+// MvxBaseAndroidBindingSetup.cs
+// (c) Copyright Cirrious Ltd. http://www.cirrious.com
+// MvvmCross is licensed using Microsoft Public License (Ms-PL)
+// Contributions and inspirations noted in readme.md and license.txt
 // 
-// Project Lead - Stuart Lodge, Cirrious. http://www.cirrious.com
-#endregion
+// Project Lead - Stuart Lodge, @slodge, me@slodge.com
 
 using System;
 using System.Collections.Generic;
@@ -17,14 +13,13 @@ using Cirrious.MvvmCross.Binding.Droid.Binders;
 using Cirrious.MvvmCross.Binding.Interfaces.Binders;
 using Cirrious.MvvmCross.Binding.Interfaces.Bindings.Target.Construction;
 using Cirrious.MvvmCross.Droid.Platform;
-using Cirrious.MvvmCross.Platform;
 
 namespace Cirrious.MvvmCross.Binding.Droid
 {
     public abstract class MvxBaseAndroidBindingSetup
         : MvxBaseAndroidSetup
     {
-        protected MvxBaseAndroidBindingSetup(Context applicationContext) 
+        protected MvxBaseAndroidBindingSetup(Context applicationContext)
             : base(applicationContext)
         {
         }
@@ -36,10 +31,21 @@ namespace Cirrious.MvvmCross.Binding.Droid
 
         protected override void InitializeLastChance()
         {
-            var bindingBuilder = new MvxAndroidBindingBuilder(FillTargetFactories, FillValueConverters, SetupViewTypeResolver);
-            bindingBuilder.DoRegistration();
-
+            InitialiseBindingBuilder();
             base.InitializeLastChance();
+        }
+
+        protected virtual void InitialiseBindingBuilder()
+        {
+            var bindingBuilder = CreateBindingBuilder();
+            bindingBuilder.DoRegistration();
+        }
+
+        protected virtual MvxAndroidBindingBuilder CreateBindingBuilder()
+        {
+            var bindingBuilder = new MvxAndroidBindingBuilder(FillTargetFactories, FillValueConverters,
+                                                              SetupViewTypeResolver);
+            return bindingBuilder;
         }
 
         protected virtual void SetupViewTypeResolver(MvxViewTypeResolver viewTypeResolver)
@@ -71,10 +77,10 @@ namespace Cirrious.MvvmCross.Binding.Droid
         {
             get
             {
-                return new Dictionary<string, string>()
-                           {
-                               { "Mvx", "Cirrious.MvvmCross.Binding.Droid.Views" }
-                           };
+                return new Dictionary<string, string>
+                    {
+                        {"Mvx", "Cirrious.MvvmCross.Binding.Droid.Views"}
+                    };
             }
         }
 

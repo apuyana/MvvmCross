@@ -1,4 +1,11 @@
-﻿using Android.Content;
+﻿// BooleanElement.cs
+// (c) Copyright Cirrious Ltd. http://www.cirrious.com
+// MvvmCross is licensed using Microsoft Public License (Ms-PL)
+// Contributions and inspirations noted in readme.md and license.txt
+// 
+// Project Lead - Stuart Lodge, @slodge, me@slodge.com
+
+using Android.Content;
 using Android.Views;
 using Android.Widget;
 
@@ -20,10 +27,10 @@ namespace CrossUI.Droid.Dialog.Elements
             return view;
         }
 
-        protected override void  UpdateCellDisplay(View cell)
+        protected override void UpdateCellDisplay(View cell)
         {
             UpdateDetailDisplay(cell);
- 	        base.UpdateCellDisplay(cell);
+            base.UpdateCellDisplay(cell);
         }
 
         protected override void UpdateCaptionDisplay(View cell)
@@ -49,7 +56,7 @@ namespace CrossUI.Droid.Dialog.Elements
             TextView _subCaption;
 
             DroidResources.DecodeBooleanElementLayout(Context, cell, out _caption, out _subCaption, out _rawToggleButton);
-            ToggleButton _toggleButton = (ToggleButton)_rawToggleButton;
+            var _toggleButton = (ToggleButton) _rawToggleButton;
             _toggleButton.SetOnCheckedChangeListener(null);
             _toggleButton.Checked = Value;
             _toggleButton.SetOnCheckedChangeListener(this);
@@ -86,8 +93,9 @@ namespace CrossUI.Droid.Dialog.Elements
             TextView _caption;
             TextView _subCaption;
 
-            DroidResources.DecodeBooleanElementLayout(Context, CurrentAttachedCell, out _caption, out _subCaption, out _rawToggleButton);
-            ToggleButton _toggleButton = (ToggleButton)_rawToggleButton;
+            DroidResources.DecodeBooleanElementLayout(Context, CurrentAttachedCell, out _caption, out _subCaption,
+                                                      out _rawToggleButton);
+            var _toggleButton = (ToggleButton) _rawToggleButton;
 
             if (_toggleButton != null)
                 _toggleButton.Toggle();

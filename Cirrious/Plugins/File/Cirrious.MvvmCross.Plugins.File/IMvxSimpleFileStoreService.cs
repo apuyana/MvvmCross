@@ -1,13 +1,10 @@
-﻿#region Copyright
-// <copyright file="IMvxSimpleFileStoreService.cs" company="Cirrious">
-// (c) Copyright Cirrious. http://www.cirrious.com
-// This source is subject to the Microsoft Public License (Ms-PL)
-// Please see license.txt on http://opensource.org/licenses/ms-pl.html
-// All other rights reserved.
-// </copyright>
+﻿// IMvxSimpleFileStoreService.cs
+// (c) Copyright Cirrious Ltd. http://www.cirrious.com
+// MvvmCross is licensed using Microsoft Public License (Ms-PL)
+// Contributions and inspirations noted in readme.md and license.txt
 // 
-// Project Lead - Stuart Lodge, Cirrious. http://www.cirrious.com
-#endregion
+// Project Lead - Stuart Lodge, @slodge, me@slodge.com
+
 #region using
 
 using System;
@@ -28,13 +25,12 @@ namespace Cirrious.MvvmCross.Plugins.File
         void WriteFile(string path, Action<Stream> writeMethod);
         bool TryMove(string from, string to, bool deleteExistingTo);
         bool Exists(string path);
+        bool FolderExists(string folderPath);
         string PathCombine(string items0, string items1);
 
         void EnsureFolderExists(string folderPath);
         IEnumerable<string> GetFilesIn(string folderPath);
         void DeleteFile(string path);
+        void DeleteFolder(string folderPath, bool recursive);
     }
 }
-
-
-#warning Reefactor needed

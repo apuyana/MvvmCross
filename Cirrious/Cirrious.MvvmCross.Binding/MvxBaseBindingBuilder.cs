@@ -1,29 +1,31 @@
-#region Copyright
-// <copyright file="MvxBaseBindingBuilder.cs" company="Cirrious">
-// (c) Copyright Cirrious. http://www.cirrious.com
-// This source is subject to the Microsoft Public License (Ms-PL)
-// Please see license.txt on http://opensource.org/licenses/ms-pl.html
-// All other rights reserved.
-// </copyright>
+// MvxBaseBindingBuilder.cs
+// (c) Copyright Cirrious Ltd. http://www.cirrious.com
+// MvvmCross is licensed using Microsoft Public License (Ms-PL)
+// Contributions and inspirations noted in readme.md and license.txt
 // 
-// Project Lead - Stuart Lodge, Cirrious. http://www.cirrious.com
-#endregion
+// Project Lead - Stuart Lodge, @slodge, me@slodge.com
 
 using Cirrious.MvvmCross.Binding.Binders;
-using Cirrious.MvvmCross.Binding.Binders.Json;
 using Cirrious.MvvmCross.Binding.Bindings.Source.Construction;
 using Cirrious.MvvmCross.Binding.Bindings.Target.Construction;
 using Cirrious.MvvmCross.Binding.Interfaces;
 using Cirrious.MvvmCross.Binding.Interfaces.Binders;
 using Cirrious.MvvmCross.Binding.Interfaces.Bindings.Source.Construction;
 using Cirrious.MvvmCross.Binding.Interfaces.Bindings.Target.Construction;
+using Cirrious.MvvmCross.Binding.Interfaces.Parse;
+using Cirrious.MvvmCross.Binding.Parse.Binding.Composite;
+using Cirrious.MvvmCross.Binding.Parse.Binding.Json;
+using Cirrious.MvvmCross.Binding.Parse.PropertyPath;
 using Cirrious.MvvmCross.ExtensionMethods;
 using Cirrious.MvvmCross.Interfaces.ServiceProvider;
+using Cirrious.MvvmCross.Binding.Parse.Binding;
+using Cirrious.MvvmCross.Interfaces.Platform.Diagnostics;
 
 namespace Cirrious.MvvmCross.Binding
 {
     public class MvxBaseBindingBuilder
         : IMvxServiceProducer
+        , IMvxServiceConsumer
     {
         public virtual void DoRegistration()
         {
@@ -31,8 +33,10 @@ namespace Cirrious.MvvmCross.Binding
             RegisterSourceFactory();
             RegisterTargetFactory();
             RegisterValueConverterProvider();
-            RegisterBindingParametersParser();
+			RegisterBindingParser();
+            RegisterBindingDescriptionParser();
             RegisterPlatformSpecificComponents();
+            RegisterSourceBindingTokeniser();
         }
 
         protected virtual void RegisterCore()
@@ -73,11 +77,33 @@ namespace Cirrious.MvvmCross.Binding
             // nothing to do here            
         }
 
-        protected virtual void RegisterBindingParametersParser()
-        {
-			var parser = new MvxJsonBindingDescriptionParser();
-            this.RegisterServiceInstance<IMvxBindingDescriptionParser>(parser);
+		protected virtual void RegisterBindingParser ()
+		{
+			if (this.IsServiceAvailable<IMvxBindingParser> ()) {
+				MvxBindingTrace.Trace(MvxTraceLevel.Diagnostic, "Binding Parser already registered - so skipping Composite parser");
+				return;
+			}
+			MvxBindingTrace.Trace(MvxTraceLevel.Diagnostic, "Registering Composite Binding Parser");
+            this.RegisterServiceInstance<IMvxBindingParser>(new MvxCompositeBindingParser()); 
 		}
+
+        protected virtual void RegisterBindingDescriptionParser()
+        {
+            var parser = CreateBindingDescriptionParser();
+            this.RegisterServiceInstance<IMvxBindingDescriptionParser>(parser);
+        }
+
+        private static IMvxBindingDescriptionParser CreateBindingDescriptionParser()
+        {
+            var parser = new MvxBindingDescriptionParser();
+            return parser;
+        }
+
+        protected virtual void RegisterSourceBindingTokeniser()
+        {
+            var tokeniser = new MvxSourcePropertyPathParser();
+            this.RegisterServiceInstance<IMvxSourcePropertyPathParser>(tokeniser);
+        }
 
         protected virtual void RegisterPlatformSpecificComponents()
         {

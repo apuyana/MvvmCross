@@ -1,24 +1,22 @@
-#region Copyright
-// <copyright file="MvxDynamicImageHelper.cs" company="Cirrious">
-// (c) Copyright Cirrious. http://www.cirrious.com
-// This source is subject to the Microsoft Public License (Ms-PL)
-// Please see license.txt on http://opensource.org/licenses/ms-pl.html
-// All other rights reserved.
-// </copyright>
+// MvxDynamicImageHelper.cs
+// (c) Copyright Cirrious Ltd. http://www.cirrious.com
+// MvvmCross is licensed using Microsoft Public License (Ms-PL)
+// Contributions and inspirations noted in readme.md and license.txt
 // 
-// Project Lead - Stuart Lodge, Cirrious. http://www.cirrious.com
-#endregion
+// Project Lead - Stuart Lodge, @slodge, me@slodge.com
 
 using System;
 using Cirrious.MvvmCross.Exceptions;
 using Cirrious.MvvmCross.ExtensionMethods;
 using Cirrious.MvvmCross.Interfaces.ServiceProvider;
 using Cirrious.MvvmCross.Platform;
+using Cirrious.MvvmCross.Platform.Diagnostics;
+using Cirrious.MvvmCross.Interfaces.Platform.Diagnostics;
 
 namespace Cirrious.MvvmCross.Plugins.DownloadCache
 {
     public class MvxDynamicImageHelper<T>
-        : IMvxServiceConsumer<IMvxLocalFileImageLoader<T>>
+        : IMvxServiceConsumer
         , IDisposable
         where T : class
     {
@@ -82,7 +80,7 @@ namespace Cirrious.MvvmCross.Plugins.DownloadCache
             }
         }
 
-#warning HttpImageUrl deprecated really
+        [Obsolete("Use ImageUrl instead")]
         public string HttpImageUrl
         {
             get { return ImageUrl; }
@@ -111,8 +109,6 @@ namespace Cirrious.MvvmCross.Plugins.DownloadCache
             var handler = ImageChanged;
             if (handler != null)
                 handler(this, new MvxValueEventArgs<T>(image));
-
-#warning Need to think carefully here - not sure about IDisposable issues...
         }
 
         private void RequestImage(string imageSource)
@@ -224,6 +220,11 @@ namespace Cirrious.MvvmCross.Plugins.DownloadCache
             }
             else
             {
+				var localImage = ImageFromLocalFile(filePath);
+				if (localImage == null)
+				{
+					MvxTrace.Trace(MvxTraceLevel.Warning, "Failed to load local image for filePath {0}", filePath);
+				}
                 FireImageChanged(ImageFromLocalFile(filePath));
             }
         }
@@ -257,7 +258,7 @@ namespace Cirrious.MvvmCross.Plugins.DownloadCache
         {
             if (isDisposing)
             {
-                ClearCurrentHttpImageRequest();   
+                ClearCurrentHttpImageRequest();
             }
         }
     }

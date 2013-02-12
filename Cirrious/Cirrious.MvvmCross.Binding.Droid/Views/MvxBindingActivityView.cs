@@ -1,13 +1,9 @@
-#region Copyright
-// <copyright file="MvxBindingActivityView.cs" company="Cirrious">
-// (c) Copyright Cirrious. http://www.cirrious.com
-// This source is subject to the Microsoft Public License (Ms-PL)
-// Please see license.txt on http://opensource.org/licenses/ms-pl.html
-// All other rights reserved.
-// </copyright>
+// MvxBindingActivityView.cs
+// (c) Copyright Cirrious Ltd. http://www.cirrious.com
+// MvvmCross is licensed using Microsoft Public License (Ms-PL)
+// Contributions and inspirations noted in readme.md and license.txt
 // 
-// Project Lead - Stuart Lodge, Cirrious. http://www.cirrious.com
-#endregion
+// Project Lead - Stuart Lodge, @slodge, me@slodge.com
 
 using System;
 using System.Collections.Generic;
@@ -18,13 +14,12 @@ using Cirrious.MvvmCross.Binding.Droid.Interfaces.Views;
 using Cirrious.MvvmCross.Binding.Interfaces;
 using Cirrious.MvvmCross.Droid.Views;
 using Cirrious.MvvmCross.Interfaces.ViewModels;
-using Cirrious.MvvmCross.Views;
 
 namespace Cirrious.MvvmCross.Binding.Droid.Views
 {
     public abstract class MvxBindingActivityView<TViewModel>
         : MvxActivityView<TViewModel>
-        , IMvxBindingActivity
+          , IMvxBindingActivity
         where TViewModel : class, IMvxViewModel
     {
         #region Code shared across all binding activities - I hate this cut and paste
@@ -55,7 +50,7 @@ namespace Cirrious.MvvmCross.Binding.Droid.Views
         {
             if (view == null)
                 return;
-            
+
             _boundViews.Add(view);
         }
 
@@ -94,7 +89,8 @@ namespace Cirrious.MvvmCross.Binding.Droid.Views
         {
             get
             {
-                throw new InvalidOperationException("LayoutInflater must not be accessed directly in MvxBindingActivityView - use IMvxBindingActivity.BindingInflate or IMvxBindingActivity.NonBindingInflate instead");
+                throw new InvalidOperationException(
+                    "LayoutInflater must not be accessed directly in MvxBindingActivityView - use IMvxBindingActivity.BindingInflate or IMvxBindingActivity.NonBindingInflate instead");
             }
         }
 
@@ -133,7 +129,8 @@ namespace Cirrious.MvvmCross.Binding.Droid.Views
             SetContentView(view);
         }
 
-        private View CommonInflate(int resourceId, ViewGroup viewGroup, Func<LayoutInflater, MvxBindingLayoutInflatorFactory> factoryProvider)
+        private View CommonInflate(int resourceId, ViewGroup viewGroup,
+                                   Func<LayoutInflater, MvxBindingLayoutInflatorFactory> factoryProvider)
         {
             var layoutInflator = base.LayoutInflater;
             using (var clone = layoutInflator.CloneInContext(this))

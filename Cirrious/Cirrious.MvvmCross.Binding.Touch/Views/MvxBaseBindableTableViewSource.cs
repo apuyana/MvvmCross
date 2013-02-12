@@ -1,23 +1,14 @@
-#region Copyright
-// <copyright file="MvxBaseBindableTableViewSource.cs" company="Cirrious">
-// (c) Copyright Cirrious. http://www.cirrious.com
-// This source is subject to the Microsoft Public License (Ms-PL)
-// Please see license.txt on http://opensource.org/licenses/ms-pl.html
-// All other rights reserved.
-// </copyright>
+// MvxBaseBindableTableViewSource.cs
+// (c) Copyright Cirrious Ltd. http://www.cirrious.com
+// MvvmCross is licensed using Microsoft Public License (Ms-PL)
+// Contributions and inspirations noted in readme.md and license.txt
 // 
-// Project Lead - Stuart Lodge, Cirrious. http://www.cirrious.com
-#endregion
+// Project Lead - Stuart Lodge, @slodge, me@slodge.com
 
 using System;
-using System.Collections.Generic;
-using System.Collections.Specialized;
 using System.Windows.Input;
-using Cirrious.MvvmCross.Binding.Interfaces;
-using Cirrious.MvvmCross.Binding.Interfaces.Binders;
 using Cirrious.MvvmCross.Binding.Touch.Interfaces.Views;
 using Cirrious.MvvmCross.Commands;
-using Cirrious.MvvmCross.ExtensionMethods;
 using MonoTouch.Foundation;
 using MonoTouch.UIKit;
 
@@ -25,55 +16,16 @@ namespace Cirrious.MvvmCross.Binding.Touch.Views
 {
     public abstract class MvxBaseBindableTableViewSource : UITableViewSource
     {
-        private static readonly NSString DefaultCellIdentifier = new NSString("BindableTableViewCell");
-        private static readonly MvxBindingDescription[] DefaultBindingDescription = new MvxBindingDescription[]
-                                                                                        {
-                                                                                            new MvxBindingDescription()
-                                                                                                {
-                                                                                                    TargetName = "TitleText",
-                                                                                                    SourcePropertyPath = string.Empty
-                                                                                                }, 
-                                                                                        };
-
-        private readonly IEnumerable<MvxBindingDescription> _bindingDescriptions;
-        private readonly NSString _cellIdentifier;
-        private readonly UITableViewCellStyle _cellStyle;
         private readonly UITableView _tableView;
-        private readonly UITableViewCellAccessory _tableViewCellAccessory = UITableViewCellAccessory.None;
-
-        protected virtual NSString CellIdentifier
-        {
-            get { return _cellIdentifier; }
-        }
 
         protected MvxBaseBindableTableViewSource(UITableView tableView)
-            : this(tableView, UITableViewCellStyle.Default, DefaultCellIdentifier, DefaultBindingDescription)
-        {
-        }
-
-        protected MvxBaseBindableTableViewSource(UITableView tableView, UITableViewCellStyle style, NSString cellIdentifier, string bindingText, UITableViewCellAccessory tableViewCellAccessory = UITableViewCellAccessory.None)
-            : this(tableView, style, cellIdentifier, ParseBindingText(bindingText), tableViewCellAccessory)
-        {
-        }
-
-        protected MvxBaseBindableTableViewSource(UITableView tableView, UITableViewCellStyle style, NSString cellIdentifier, IEnumerable<MvxBindingDescription> descriptions, UITableViewCellAccessory tableViewCellAccessory = UITableViewCellAccessory.None)
         {
             _tableView = tableView;
-            _cellStyle = style;
-            _cellIdentifier = cellIdentifier;
-            _bindingDescriptions = descriptions;
-            _tableViewCellAccessory = tableViewCellAccessory;
         }
 
-        protected IEnumerable<MvxBindingDescription> BindingDescriptions { get { return _bindingDescriptions; } }
-        protected UITableView TableView { get { return _tableView; } }
-
-        private static IEnumerable<MvxBindingDescription> ParseBindingText(string bindingText)
+        protected UITableView TableView
         {
-            if (string.IsNullOrEmpty(bindingText))
-                return DefaultBindingDescription;
-
-            return MvxServiceProviderExtensions.GetService<IMvxBindingDescriptionParser>().Parse(bindingText);
+            get { return _tableView; }
         }
 
         public event EventHandler<MvxSimpleSelectionChangedEventArgs> SelectionChanged;
@@ -85,20 +37,7 @@ namespace Cirrious.MvvmCross.Binding.Touch.Views
             _tableView.ReloadData();
         }
 
-        protected virtual UITableViewCell GetOrCreateCellFor(UITableView tableView, NSIndexPath indexPath, object item)
-        {
-            var reuse = tableView.DequeueReusableCell(CellIdentifier);
-            if (reuse != null)
-                return reuse;
-
-            return CreateDefaultBindableCell(tableView, indexPath, item);
-        }
-
-        protected virtual MvxBindableTableViewCell CreateDefaultBindableCell(UITableView tableView, NSIndexPath indexPath, object item)
-        {
-            return new MvxBindableTableViewCell(_bindingDescriptions, _cellStyle, CellIdentifier,
-                                                _tableViewCellAccessory);
-        }
+        protected abstract UITableViewCell GetOrCreateCellFor(UITableView tableView, NSIndexPath indexPath, object item);
 
         protected abstract object GetItemAt(NSIndexPath indexPath);
 

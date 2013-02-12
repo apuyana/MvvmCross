@@ -48,18 +48,15 @@
   <ItemGroup>
     <Compile Include="Binders\MvxBindingLayoutCleaner.cs" />
     <Compile Include="Interfaces\Binders\IMvxViewTypeResolver.cs" />
-    <Compile Include="Binders\MvxJavaBindingWrapper.cs" />
     <Compile Include="MvxBaseAndroidBindingSetup.cs" />
     <Compile Include="MvxJavaContainer.cs" />
     <Compile Include="Binders\MvxViewTypeResolver.cs" />
     <Compile Include="Interfaces\Views\IMvxBindingActivity.cs" />
     <Compile Include="Interfaces\Binders\IMvxBindingLayoutInflator.cs" />
-    <Compile Include="Interfaces\Binders\IMvxViewClassNameResolver.cs" />
-    <Compile Include="Binders\MvxViewClassNameResolver.cs" />
     <Compile Include="MvxAndroidBindingResource.cs" />
     <Compile Include="Simple\MvxSimpleAndroidBindingSetup.cs" />
     <Compile Include="Simple\MvxSimpleEmptyAndroidApp.cs" />
-    <Compile Include="Target\MvxAdapterViewSelectedItemTargetBinding.cs" />
+    <Compile Include="Target\MvxListViewSelectedItemTargetBinding.cs" />
     <Compile Include="Target\MvxAdapterViewSelectedItemPositionTargetBinding.cs" />
     <Compile Include="Target\MvxAutoCompleteTextViewPartialTextTargetBinding.cs" />
     <Compile Include="Target\MvxAutoCompleteTextViewSelectedObjectTargetBinding.cs" />
@@ -90,6 +87,7 @@
     <Compile Include="ExtensionMethods\MvxTextSettingExtensions.cs" />
     <Compile Include="ExtensionMethods\MvxViewBindingExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Views\MvxImageView.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Cirrious.MvvmCross.Binding\Cirrious.MvvmCross.Binding.csproj">
