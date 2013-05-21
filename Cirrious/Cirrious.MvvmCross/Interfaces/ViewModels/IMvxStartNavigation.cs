@@ -10,7 +10,6 @@ namespace Cirrious.MvvmCross.Interfaces.ViewModels
     public interface IMvxStartNavigation
     {
         void Start();
-#warning Not sure ApplicationCanOpenBookmarks should be in Mvx Library!
         bool ApplicationCanOpenBookmarks { get; }
     }
 }

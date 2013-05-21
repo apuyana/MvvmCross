@@ -25,7 +25,14 @@ namespace Cirrious.MvvmCross.Plugins.Visibility
             {
                 if (_nativeVisiblity == null)
                 {
-					_nativeVisiblity = this.GetService<IMvxNativeVisibility>();
+                    try
+                    {
+                        _nativeVisiblity = this.GetService<IMvxNativeVisibility>();
+                    }
+                    catch (Exception ex)
+                    {
+                        System.Diagnostics.Debug.WriteLine(ex.Message);
+                    }					
                 }
 
                 return _nativeVisiblity;
@@ -37,7 +44,15 @@ namespace Cirrious.MvvmCross.Plugins.Visibility
         public override sealed object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             var mvx = ConvertToMvxVisibility(value, parameter, culture);
-            return NativeVisibility.ToNative(mvx);
+
+            if (NativeVisibility != null)
+            {
+                return NativeVisibility.ToNative(mvx);
+            }
+            else
+            {
+                return null;
+            }
         }
 
         public override sealed object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
