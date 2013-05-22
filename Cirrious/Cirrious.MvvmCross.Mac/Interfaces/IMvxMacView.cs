@@ -7,26 +7,21 @@
 // </copyright>
 // 
 // Project Lead - Stuart Lodge, Cirrious. http://www.cirrious.com
+using Cirrious.MvvmCross.ViewModels;
+
+
 #endregion
 
-using Cirrious.MvvmCross.Interfaces.ServiceProvider;
 using Cirrious.MvvmCross.Interfaces.ViewModels;
 using Cirrious.MvvmCross.Interfaces.Views;
 using Cirrious.MvvmCross.Views;
 
-namespace Cirrious.MvvmCross.Touch.Interfaces
+namespace Cirrious.MvvmCross.Mac.Interfaces
 {
     public interface IMvxMacView
 		: IMvxView
 	{
-        MvxShowViewModelRequest ShowRequest { get; }
-    }
-
-    public interface IMvxMacView<TViewModel>
-        : IMvxView<TViewModel>
-        , IMvxMacView
-        , IMvxServiceConsumer<IMvxViewModelLoader>
-        where TViewModel : class, IMvxViewModel
-    {
+		void ClearBackStack();
+		MvxShowViewModelRequest ShowRequest { get; set; }
     }
 }

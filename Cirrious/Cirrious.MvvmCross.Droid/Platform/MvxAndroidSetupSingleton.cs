@@ -8,29 +8,50 @@
 using System;
 using System.Linq;
 using Android.Content;
-using Cirrious.MvvmCross.Exceptions;
-using Cirrious.MvvmCross.ExtensionMethods;
+using Cirrious.CrossCore.Core;
+using Cirrious.CrossCore.Exceptions;
 
 namespace Cirrious.MvvmCross.Droid.Platform
 {
     public class MvxAndroidSetupSingleton
+        : MvxSingleton<MvxAndroidSetupSingleton>
     {
         private static readonly object LockObject = new object();
-        private static MvxBaseAndroidSetup _instance;
+        private MvxAndroidSetup _instance;
 
-        public static MvxBaseAndroidSetup GetOrCreateSetup(Context applicationContext)
+        public static MvxAndroidSetup GetOrCreateSetup(Context applicationContext)
+        {
+            EnsureSingletonAvailable();
+            return Instance.GetOrCreateSetupImpl(applicationContext);
+        }
+
+        private static void EnsureSingletonAvailable()
+        {
+            if (Instance != null)
+                return;
+
+            lock (LockObject)
+            {
+                if (Instance != null)
+                    return;
+                var instance = new MvxAndroidSetupSingleton();
+            }
+        }
+
+        private MvxAndroidSetupSingleton()
+        {
+            // private constructor
+        }
+
+        private MvxAndroidSetup GetOrCreateSetupImpl(Context applicationContext)
         {
             if (_instance != null)
-            {
                 return _instance;
-            }
 
             lock (LockObject)
             {
                 if (_instance != null)
-                {
                     return _instance;
-                }
 
                 var setupType = FindSetupType();
                 if (setupType == null)
@@ -40,7 +61,7 @@ namespace Cirrious.MvvmCross.Droid.Platform
 
                 try
                 {
-                    _instance = (MvxBaseAndroidSetup) Activator.CreateInstance(setupType, applicationContext);
+                    _instance = (MvxAndroidSetup) Activator.CreateInstance(setupType, applicationContext);
                 }
                 catch (Exception exception)
                 {
@@ -56,10 +77,22 @@ namespace Cirrious.MvvmCross.Droid.Platform
             var query = from assembly in AppDomain.CurrentDomain.GetAssemblies()
                         from type in assembly.GetTypes()
                         where type.Name == "Setup"
-                        where typeof (MvxBaseAndroidSetup).IsAssignableFrom(type)
+                        where typeof (MvxAndroidSetup).IsAssignableFrom(type)
                         select type;
 
             return query.FirstOrDefault();
+        }
+
+        protected override void Dispose(bool isDisposing)
+        {
+            if (isDisposing)
+            {
+                lock (LockObject)
+                {
+                    _instance = null;
+                }
+            }
+            base.Dispose(isDisposing);
         }
     }
 }

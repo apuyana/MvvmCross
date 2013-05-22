@@ -5,12 +5,10 @@
 // 
 // Project Lead - Stuart Lodge, @slodge, me@slodge.com
 
-using Cirrious.MvvmCross.Exceptions;
-using Cirrious.MvvmCross.ExtensionMethods;
-using Cirrious.MvvmCross.Interfaces.Platform.Diagnostics;
-using Cirrious.MvvmCross.Interfaces.ViewModels;
-using Cirrious.MvvmCross.Platform.Diagnostics;
-using Cirrious.MvvmCross.Touch.Interfaces;
+using Cirrious.CrossCore.Exceptions;
+using Cirrious.CrossCore.Platform;
+using Cirrious.MvvmCross.ViewModels;
+using Cirrious.MvvmCross.Views;
 using MonoTouch.UIKit;
 
 namespace Cirrious.MvvmCross.Touch.Views.Presenters
@@ -31,7 +29,7 @@ namespace Cirrious.MvvmCross.Touch.Views.Presenters
                 if (_currentModalViewController != null)
                     throw new MvxException("Only one modal view controller at a time supported");
 
-                var newNav = new UINavigationController();
+                var newNav = CreateModalNavigationController();
                 newNav.PushViewController(view as UIViewController, false);
 
                 _currentModalViewController = view as UIViewController;
@@ -43,11 +41,17 @@ namespace Cirrious.MvvmCross.Touch.Views.Presenters
             base.Show(view);
         }
 
+        protected virtual UINavigationController CreateModalNavigationController()
+        {
+            var newNav = new UINavigationController();
+            return newNav;
+        }
+
         public override void NativeModalViewControllerDisappearedOnItsOwn()
         {
             if (_currentModalViewController != null)
             {
-                MvxTrace.Trace(MvxTraceLevel.Error, "How did a modal disappear when we didn't have one showing?");
+                MvxTrace.Error( "How did a modal disappear when we didn't have one showing?");
                 return;
             }
 
@@ -78,7 +82,7 @@ namespace Cirrious.MvvmCross.Touch.Views.Presenters
                 var touchView = _currentModalViewController as IMvxTouchView;
                 if (touchView == null)
                 {
-                    MvxTrace.Trace(MvxTraceLevel.Error,
+                    MvxTrace.Error(
                                    "Unable to close view - modal is showing but not an IMvxTouchView");
                     return;
                 }
@@ -86,7 +90,7 @@ namespace Cirrious.MvvmCross.Touch.Views.Presenters
                 var viewModel = touchView.ReflectionGetViewModel();
                 if (viewModel != toClose)
                 {
-                    MvxTrace.Trace(MvxTraceLevel.Error,
+                    MvxTrace.Error(
                                    "Unable to close view - modal is showing but is not the requested viewmodel");
                     return;
                 }

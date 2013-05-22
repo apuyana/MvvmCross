@@ -5,47 +5,32 @@
 // 
 // Project Lead - Stuart Lodge, @slodge, me@slodge.com
 
-using System;
-using Android.App;
 using Android.Content;
-using Android.OS;
-using Cirrious.MvvmCross.Droid.ExtensionMethods;
-using Cirrious.MvvmCross.Droid.Interfaces;
-using Cirrious.MvvmCross.ExtensionMethods;
-using Cirrious.MvvmCross.Interfaces.ServiceProvider;
-using Cirrious.MvvmCross.Interfaces.ViewModels;
-using Cirrious.MvvmCross.Platform.Diagnostics;
-using CrossUI.Droid.Dialog;
+using Cirrious.MvvmCross.Binding.BindingContext;
+using Cirrious.MvvmCross.Binding.Droid.BindingContext;
+using Cirrious.MvvmCross.Droid.Views;
+using Cirrious.MvvmCross.ViewModels;
 
 namespace Cirrious.MvvmCross.Dialog.Droid.Views
 {
-    public abstract class MvxDialogActivityView<TViewModel>
-        : DialogActivity
-          , IMvxAndroidView<TViewModel>
-        where TViewModel : class, IMvxViewModel
+    public abstract class MvxDialogActivityView
+        : EventSourceDialogActivity
+          , IMvxAndroidView
     {
         protected MvxDialogActivityView()
         {
-            IsVisible = true;
+            BindingContext = new MvxAndroidBindingContext(this, this);
+            this.AddEventListeners();
         }
 
-        #region Common code across all android views - one case for multiple inheritance?
+        public object DataContext { get; set; }
 
-        private TViewModel _viewModel;
-
-        public Type ViewModelType
+        public IMvxViewModel ViewModel
         {
-            get { return typeof (TViewModel); }
-        }
-
-        public bool IsVisible { get; private set; }
-
-        public TViewModel ViewModel
-        {
-            get { return _viewModel; }
+            get { return DataContext as IMvxViewModel; }
             set
             {
-                _viewModel = value;
+                DataContext = value;
                 OnViewModelSet();
             }
         }
@@ -55,80 +40,16 @@ namespace Cirrious.MvvmCross.Dialog.Droid.Views
             base.StartActivityForResult(intent, requestCode);
         }
 
-        protected override void OnCreate(Bundle bundle)
+        protected virtual void OnViewModelSet()
         {
-            base.OnCreate(bundle);
-            this.OnViewCreate();
         }
 
-        protected override void OnDestroy()
+        public IMvxBindingContext BindingContext { get; set; }
+
+        public override void SetContentView(int layoutResId)
         {
-            this.OnViewDestroy();
-            base.OnDestroy();
+            var view = this.BindingInflate(layoutResId, null);
+            SetContentView(view);
         }
-
-        protected override void OnNewIntent(Intent intent)
-        {
-            base.OnNewIntent(intent);
-            this.OnViewNewIntent();
-        }
-
-        protected abstract void OnViewModelSet();
-
-        protected override void OnResume()
-        {
-            base.OnResume();
-            IsVisible = true;
-            this.OnViewResume();
-        }
-
-        protected override void OnPause()
-        {
-            this.OnViewPause();
-            IsVisible = false;
-            base.OnPause();
-        }
-
-        protected override void OnStart()
-        {
-            base.OnStart();
-            this.OnViewStart();
-        }
-
-        protected override void OnRestart()
-        {
-            base.OnRestart();
-            this.OnViewRestart();
-        }
-
-        protected override void OnStop()
-        {
-            this.OnViewStop();
-            base.OnStop();
-        }
-
-        public override void StartActivityForResult(Intent intent, int requestCode)
-        {
-            switch (requestCode)
-            {
-                case (int) MvxIntentRequestCode.PickFromFile:
-                    MvxTrace.Trace("Warning - activity request code may clash with Mvx code for {0}",
-                                   (MvxIntentRequestCode) requestCode);
-                    break;
-                default:
-                    // ok...
-                    break;
-            }
-            base.StartActivityForResult(intent, requestCode);
-        }
-
-        protected override void OnActivityResult(int requestCode, Result resultCode, Intent data)
-        {
-            this.GetService<IMvxIntentResultSink>()
-                .OnResult(new MvxIntentResultEventArgs(requestCode, resultCode, data));
-            base.OnActivityResult(requestCode, resultCode, data);
-        }
-
-        #endregion
     }
 }

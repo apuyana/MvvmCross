@@ -6,13 +6,9 @@
 // Project Lead - Stuart Lodge, @slodge, me@slodge.com
 
 using System.Collections.Generic;
+using Cirrious.CrossCore;
 using Cirrious.MvvmCross.AutoView.Touch.Interfaces.Lists;
-using Cirrious.MvvmCross.Binding.Interfaces;
-using Cirrious.MvvmCross.Binding.Interfaces.Binders;
-using Cirrious.MvvmCross.Binding.Interfaces.Parse;
-using Cirrious.MvvmCross.ExtensionMethods;
-using Cirrious.MvvmCross.Interfaces.ServiceProvider;
-using Cirrious.MvvmCross.Plugins.Json;
+using Cirrious.MvvmCross.Binding.Binders;
 using MonoTouch.Foundation;
 using MonoTouch.UIKit;
 
@@ -20,7 +16,7 @@ namespace Cirrious.MvvmCross.AutoView.Touch.Views.Lists
 {
     public class GeneralListItemViewFactory
         : IMvxLayoutListItemViewFactory
-          , IMvxServiceConsumer
+
     {
         public UITableViewCell BuildView(NSIndexPath indexPath, object item, string cellId)
         {
@@ -64,15 +60,13 @@ namespace Cirrious.MvvmCross.AutoView.Touch.Views.Lists
 
         private IEnumerable<MvxBindingDescription> CreateBindingDescriptions()
         {
-            var json = this.GetService<IMvxJsonConverter>();
+            var parser = Mvx.Resolve<IMvxBindingDescriptionParser>();
             var toReturn = new List<MvxBindingDescription>();
             foreach (var binding in Bindings)
             {
-                var bindingDescription = json.DeserializeObject<MvxSerializableBindingDescription>(binding.Value);
-                var binder = this.GetService<IMvxBindingDescriptionParser>();
-                var description = binder.SerializableBindingToBinding(binding.Key, bindingDescription);
-
-                toReturn.Add(description);
+                var bindingDescription = parser.ParseSingle(binding.Value);
+                bindingDescription.TargetName = binding.Key;
+                toReturn.Add(bindingDescription);
             }
 
             return toReturn;

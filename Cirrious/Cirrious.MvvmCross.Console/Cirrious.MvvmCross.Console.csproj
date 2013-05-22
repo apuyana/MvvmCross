@@ -16,7 +16,7 @@
     <DebugSymbols>True</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>False</Optimize>
-    <OutputPath>..\..\bin\Portable\Debug</OutputPath>
+    <OutputPath>..\..\bin\Debug\Mvx\Console\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -25,7 +25,7 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>True</Optimize>
-    <OutputPath>..\..\bin\Portable\Release</OutputPath>
+    <OutputPath>..\..\bin\Release\Mvx\Console\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -41,33 +41,29 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Interfaces\IMvxConsoleCurrentView.cs" />
-    <Compile Include="Interfaces\IMvxConsoleNavigation.cs" />
-    <Compile Include="Interfaces\IMvxConsoleView.cs" />
-    <Compile Include="Interfaces\IMvxMessagePump.cs" />
+    <Compile Include="Views\IMvxConsoleCurrentView.cs" />
+    <Compile Include="Views\IMvxConsoleNavigation.cs" />
+    <Compile Include="Views\IMvxConsoleView.cs" />
+    <Compile Include="Platform\IMvxMessagePump.cs" />
+    <Compile Include="Platform\MvxConsolePluginManager.cs" />
     <Compile Include="Views\MvxBaseConsoleContainer.cs" />
     <Compile Include="Views\MvxConsoleContainer.cs" />
-    <Compile Include="Views\MvxConsoleDispatcher.cs" />
-    <Compile Include="Views\MvxConsoleDispatcherProvider.cs" />
+    <Compile Include="Views\MvxConsoleViewDispatcher.cs" />
     <Compile Include="Views\MvxConsoleMessagePump.cs" />
     <Compile Include="Views\MvxConsoleSystemMessageHandler.cs" />
     <Compile Include="Views\MvxConsoleView.cs" />
-    <Compile Include="Platform\MvxBaseConsoleSetup.cs" />
+    <Compile Include="Platform\MvxConsoleSetup.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Platform\Unused\MvxConsoleResourceLoader.cs" />
     <Compile Include="Platform\MvxDebugTrace.cs" />
-    <Compile Include="Platform\Unused\MvxFileStoreService.cs" />
-    <Compile Include="Platform\Unused\Tasks\MvxPhoneCallTask.cs" />
-    <Compile Include="Platform\Unused\Tasks\MvxWebBrowserTask.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\CrossCore\Cirrious.CrossCore\Cirrious.CrossCore.csproj">
+      <Project>{CFF6F25A-3C3B-44EE-A54C-2ED4AAFF3ADB}</Project>
+      <Name>Cirrious.CrossCore</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Cirrious.MvvmCross\Cirrious.MvvmCross.csproj">
       <Project>{B6E27475-E7D0-448C-A5CC-5097DCA1E2DD}</Project>
       <Name>Cirrious.MvvmCross</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Plugins\Json\Cirrious.MvvmCross.Plugins.Json\Cirrious.MvvmCross.Plugins.Json.csproj">
-      <Project>{D518E8E6-3CE6-4706-A286-E8BC6A2F64DC}</Project>
-      <Name>Cirrious.MvvmCross.Plugins.Json</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

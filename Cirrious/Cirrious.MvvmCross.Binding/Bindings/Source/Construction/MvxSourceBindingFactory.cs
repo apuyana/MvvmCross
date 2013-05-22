@@ -7,25 +7,18 @@
 
 using System.Collections.Generic;
 using System.Linq;
+using Cirrious.CrossCore.Exceptions;
+using Cirrious.CrossCore;
 using Cirrious.MvvmCross.Binding.Bindings.Source.Chained;
 using Cirrious.MvvmCross.Binding.Bindings.Source.Leaf;
-using Cirrious.MvvmCross.Binding.Interfaces.Bindings.Source;
-using Cirrious.MvvmCross.Binding.Interfaces.Bindings.Source.Construction;
-using Cirrious.MvvmCross.Binding.Interfaces.Parse;
+using Cirrious.MvvmCross.Binding.Parse.PropertyPath;
 using Cirrious.MvvmCross.Binding.Parse.PropertyPath.PropertyTokens;
-using Cirrious.MvvmCross.Exceptions;
-using Cirrious.MvvmCross.ExtensionMethods;
-using Cirrious.MvvmCross.Interfaces.Platform.Diagnostics;
-using Cirrious.MvvmCross.Interfaces.ServiceProvider;
 
 namespace Cirrious.MvvmCross.Binding.Bindings.Source.Construction
 {
     public class MvxSourceBindingFactory
         : IMvxSourceBindingFactory
-          , IMvxServiceConsumer
     {
-        private static readonly char[] FieldSeparator = new[] {'.', '['};
-
         private IMvxSourcePropertyPathParser _propertyPathParser;
 
         private IMvxSourcePropertyPathParser SourcePropertyPathParser
@@ -34,7 +27,7 @@ namespace Cirrious.MvvmCross.Binding.Bindings.Source.Construction
             {
                 if (_propertyPathParser == null)
                 {
-                    _propertyPathParser = this.GetService<IMvxSourcePropertyPathParser>();
+                    _propertyPathParser = Mvx.Resolve<IMvxSourcePropertyPathParser>();
                 }
                 return _propertyPathParser;
             }
@@ -48,7 +41,7 @@ namespace Cirrious.MvvmCross.Binding.Bindings.Source.Construction
             return CreateBinding(source, tokens);
         }
 
-        public IMvxSourceBinding CreateBinding(object source, IList<MvxBasePropertyToken> tokens)
+        public IMvxSourceBinding CreateBinding(object source, IList<MvxPropertyToken> tokens)
         {
             if (tokens == null || tokens.Count == 0)
             {
@@ -67,8 +60,8 @@ namespace Cirrious.MvvmCross.Binding.Bindings.Source.Construction
             }
         }
 
-        private static MvxChainedSourceBinding CreateChainedBinding(object source, MvxBasePropertyToken propertyToken,
-                                                                    List<MvxBasePropertyToken> remainingTokens)
+        private static MvxChainedSourceBinding CreateChainedBinding(object source, MvxPropertyToken propertyToken,
+                                                                    List<MvxPropertyToken> remainingTokens)
         {
             if (propertyToken is MvxIndexerPropertyToken)
             {
@@ -85,7 +78,7 @@ namespace Cirrious.MvvmCross.Binding.Bindings.Source.Construction
                                    propertyToken.GetType().FullName);
         }
 
-        private static IMvxSourceBinding CreateLeafBinding(object source, MvxBasePropertyToken propertyToken)
+        private static IMvxSourceBinding CreateLeafBinding(object source, MvxPropertyToken propertyToken)
         {
             if (propertyToken is MvxIndexerPropertyToken)
             {

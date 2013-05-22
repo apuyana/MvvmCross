@@ -11,20 +11,22 @@
     <AssemblyName>Cirrious.MvvmCross.Wpf</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <ProductVersion>10.0.0</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
+    <DebugSymbols>True</DebugSymbols>
     <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>..\..\bin\Wpf\Debug\</OutputPath>
+    <Optimize>False</Optimize>
+    <OutputPath>..\..\bin\Debug\Mvx\Wpf\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>..\..\bin\Wpf\Release\</OutputPath>
+    <Optimize>True</Optimize>
+    <OutputPath>..\..\bin\Release\Mvx\Wpf\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -47,25 +49,30 @@
   <ItemGroup>
     <Compile Include="Commands\MvxEventToCommand.cs" />
     <Compile Include="Commands\MvxSelectionChangedEventToCommand.cs" />
+    <Compile Include="Commands\MvxSimpleSelectionChangedEventArgs.cs" />
     <Compile Include="Commands\MvxWithArgsEventToCommand.cs" />
-    <Compile Include="Interfaces\IMvxWpfViewPresenter.cs" />
-    <Compile Include="Interfaces\IMvxWpfView.cs" />
-    <Compile Include="Platform\Converters\MvxNativeValueConverter.cs" />
-    <Compile Include="Platform\MvxBaseWpfSetup.cs" />
+    <Compile Include="Views\IMvxWpfViewPresenter.cs" />
+    <Compile Include="Views\IMvxWpfView.cs" />
+    <Compile Include="Converters\MvxNativeValueConverter.cs" />
+    <Compile Include="Platform\MvxWpfSetup.cs" />
     <Compile Include="Platform\MvxDebugTrace.cs" />
-    <Compile Include="Interfaces\IMvxSimpleWpfViewLoader.cs" />
+    <Compile Include="Views\IMvxSimpleWpfViewLoader.cs" />
     <Compile Include="Views\MvxSimpleWpfViewPresenter.cs" />
+    <Compile Include="Views\MvxWpfSimpleViewPresenter.cs" />
     <Compile Include="Views\MvxWpfUIThreadDispatcher.cs" />
     <Compile Include="Views\MvxWpfView.cs" />
     <Compile Include="Views\MvxWpfViewPresenter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Views\MvxWpfViewsContainer.cs" />
-    <Compile Include="Views\MvxWpfDispatcher.cs" />
-    <Compile Include="Views\MvxWpfDispatcherProvider.cs" />
+    <Compile Include="Views\MvxWpfViewDispatcher.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\CrossCore\Cirrious.CrossCore\Cirrious.CrossCore.csproj">
+      <Project>{CFF6F25A-3C3B-44EE-A54C-2ED4AAFF3ADB}</Project>
+      <Name>Cirrious.CrossCore</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Cirrious.MvvmCross\Cirrious.MvvmCross.csproj">
-      <Project>{b6e27475-e7d0-448c-a5cc-5097dca1e2dd}</Project>
+      <Project>{B6E27475-E7D0-448C-A5CC-5097DCA1E2DD}</Project>
       <Name>Cirrious.MvvmCross</Name>
     </ProjectReference>
   </ItemGroup>

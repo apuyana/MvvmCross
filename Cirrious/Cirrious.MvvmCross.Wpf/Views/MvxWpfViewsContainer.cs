@@ -7,21 +7,19 @@
 
 using System;
 using System.Windows;
-using Cirrious.MvvmCross.Exceptions;
-using Cirrious.MvvmCross.ExtensionMethods;
-using Cirrious.MvvmCross.Interfaces.ServiceProvider;
-using Cirrious.MvvmCross.Interfaces.ViewModels;
+using Cirrious.CrossCore.Exceptions;
+using Cirrious.CrossCore;
+using Cirrious.MvvmCross.ViewModels;
 using Cirrious.MvvmCross.Views;
-using Cirrious.MvvmCross.Wpf.Interfaces;
 
 namespace Cirrious.MvvmCross.Wpf.Views
 {
     public class MvxWpfViewsContainer
         : MvxViewsContainer
-		, IMvxSimpleWpfViewLoader
-        , IMvxServiceConsumer
+          , IMvxSimpleWpfViewLoader
+
     {
-        public FrameworkElement CreateView(MvxShowViewModelRequest request)
+        public FrameworkElement CreateView(MvxViewModelRequest request)
         {
             var viewType = GetViewType(request.ViewModelType);
             if (viewType == null)
@@ -40,8 +38,8 @@ namespace Cirrious.MvvmCross.Wpf.Views
             if (viewControl == null)
                 throw new MvxException("Loaded View is not a FrameworkElement " + viewType);
 
-			var viewModelLoader = this.GetService<IMvxViewModelLoader>();
-            wpfView.ViewModel = viewModelLoader.LoadViewModel(request);
+            var viewModelLoader = Mvx.Resolve<IMvxViewModelLoader>();
+            wpfView.ViewModel = viewModelLoader.LoadViewModel(request, null);
 
             return viewControl;
         }

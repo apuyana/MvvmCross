@@ -16,7 +16,7 @@ namespace Cirrious.MvvmCross.Binding.Bindings.Source.Chained
         private readonly MvxIndexerPropertyToken _indexerPropertyToken;
 
         public MvxIndexerChainedSourceBinding(object source, MvxIndexerPropertyToken indexerPropertyToken,
-                                              IList<MvxBasePropertyToken> childTokens)
+                                              IList<MvxPropertyToken> childTokens)
             : base(source, "Item", childTokens)
         {
             _indexerPropertyToken = indexerPropertyToken;
@@ -25,7 +25,7 @@ namespace Cirrious.MvvmCross.Binding.Bindings.Source.Chained
 
         protected override object[] PropertyIndexParameters()
         {
-            return new [] {_indexerPropertyToken.Key};
+            return new[] {_indexerPropertyToken.Key};
         }
     }
 }

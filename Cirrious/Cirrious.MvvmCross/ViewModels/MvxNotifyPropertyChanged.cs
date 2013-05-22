@@ -5,23 +5,20 @@
 // 
 // Project Lead - Stuart Lodge, @slodge, me@slodge.com
 
+using Cirrious.CrossCore.Core;
 using System;
 using System.ComponentModel;
 using System.Linq.Expressions;
-using Cirrious.MvvmCross.ExtensionMethods;
 using System.Runtime.Serialization;
 
 namespace Cirrious.MvvmCross.ViewModels
 {
     [DataContract]
     public abstract class MvxNotifyPropertyChanged
-        : MvxMainThreadDispatchingObject, INotifyPropertyChanged
+        : MvxMainThreadDispatchingObject
+          , INotifyPropertyChanged
     {
-        #region INotifyPropertyChanged Members
-
         public event PropertyChangedEventHandler PropertyChanged;
-
-        #endregion
 
         protected void RaisePropertyChanged<T>(Expression<Func<T>> property)
         {

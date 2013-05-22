@@ -7,27 +7,45 @@
 
 using Android.App;
 using Android.Views;
+using Cirrious.CrossCore.IoC;
 using Cirrious.MvvmCross.AutoView.Droid.ExtensionMethods;
 using Cirrious.MvvmCross.AutoView.Droid.Interfaces;
+using Cirrious.MvvmCross.AutoView.ExtensionMethods;
+using Cirrious.MvvmCross.Binding.BindingContext;
+using Cirrious.MvvmCross.Binding.Droid.BindingContext;
 using Cirrious.MvvmCross.Dialog.Droid.Views;
 using Cirrious.MvvmCross.ViewModels;
-using Cirrious.MvvmCross.Views.Attributes;
+using Cirrious.MvvmCross.Views;
 using CrossUI.Core.Elements.Menu;
+using CrossUI.Droid.Dialog.Elements;
+using Cirrious.CrossCore;
 
 namespace Cirrious.MvvmCross.AutoView.Droid.Views.Dialog
 {
     [Activity]
-    [MvxUnconventionalView]
+    [MvxUnconventional]
     public class MvxAutoDialogActivityView
-        : MvxBindingDialogActivityView<MvxViewModel>
-          , IMvxAndroidAutoView<MvxViewModel>
+        : MvxDialogActivityView
+          , IMvxAndroidAutoView
     {
         private IParentMenu _parentMenu;
 
+        public new MvxViewModel ViewModel
+        {
+            get { return (MvxViewModel) base.ViewModel; }
+            set { base.ViewModel = value; }
+        }
+
         protected override void OnViewModelSet()
         {
-            Root = this.LoadDialogRoot();
-            _parentMenu = this.LoadMenu();
+            base.OnViewModelSet();
+            using (
+                new MvxBindingContextStackRegistration<IMvxAndroidBindingContext>((IMvxAndroidBindingContext) BindingContext)
+                )
+            {
+                Root = this.LoadDialogRoot<Element, RootElement>();
+                _parentMenu = this.LoadMenu();
+            }
         }
 
         public override bool OnCreateOptionsMenu(Android.Views.IMenu menu)

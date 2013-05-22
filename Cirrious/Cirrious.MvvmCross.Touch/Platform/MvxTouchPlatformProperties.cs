@@ -6,12 +6,12 @@
 // Project Lead - Stuart Lodge, @slodge, me@slodge.com
 
 using System;
-using Cirrious.MvvmCross.Touch.Interfaces;
 using MonoTouch.ObjCRuntime;
 using MonoTouch.UIKit;
 
 namespace Cirrious.MvvmCross.Touch.Platform
 {
+    [Obsolete("In the future I expect to see something implemented in the core project for this functionality - including something that can be called statically during startup")]
     public class MvxTouchPlatformProperties : IMvxTouchPlatformProperties
     {
         #region Implementation of IMvxTouchPlatformProperties
@@ -23,6 +23,9 @@ namespace Cirrious.MvvmCross.Touch.Platform
                 switch (UIDevice.CurrentDevice.UserInterfaceIdiom)
                 {
                     case UIUserInterfaceIdiom.Phone:
+                        if (UIScreen.MainScreen.Bounds.Height*UIScreen.MainScreen.Scale >= 1136)
+                            return MvxTouchFormFactor.TallPhone;
+
                         return MvxTouchFormFactor.Phone;
 
                     case UIUserInterfaceIdiom.Pad:

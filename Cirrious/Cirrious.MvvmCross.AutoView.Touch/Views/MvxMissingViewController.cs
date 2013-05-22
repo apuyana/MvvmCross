@@ -6,37 +6,31 @@
 // Project Lead - Stuart Lodge, @slodge, me@slodge.com
 
 using Cirrious.MvvmCross.AutoView.ExtensionMethods;
-using Cirrious.MvvmCross.AutoView.Touch.ExtensionMethods;
 using Cirrious.MvvmCross.AutoView.Touch.Interfaces;
-using Cirrious.MvvmCross.Binding.Interfaces;
 using Cirrious.MvvmCross.Dialog.Touch;
 using Cirrious.MvvmCross.ViewModels;
-using Cirrious.MvvmCross.Views;
-using Cirrious.MvvmCross.Views.Attributes;
+using CrossUI.Touch.Dialog.Elements;
+using Cirrious.CrossCore.IoC;
 
 namespace Cirrious.MvvmCross.AutoView.Touch.Views
 {
-    [MvxUnconventionalView]
+    [MvxUnconventional]
     public class MvxMissingViewController
-        : MvxTouchDialogViewController<MvxViewModel>
-          , IMvxTouchAutoView<MvxViewModel>
+        : MvxDialogViewController
+          , IMvxTouchAutoView
     {
-        public MvxMissingViewController(MvxShowViewModelRequest request) : base(request)
+        public new MvxViewModel ViewModel
         {
+            get { return (MvxViewModel) base.ViewModel; }
+            set { base.ViewModel = value; }
         }
-
-        public void RegisterBinding(IMvxUpdateableBinding binding)
-        {
-            Bindings.Add(binding);
-        }
-
 
         public override void ViewDidLoad()
         {
             base.ViewDidLoad();
 
             var description = this.ViewModel.CreateMissingDialogDescription();
-            var root = this.LoadDialogRoot(description);
+            var root = this.LoadDialogRoot<Element, RootElement>(description);
             Root = root;
         }
     }

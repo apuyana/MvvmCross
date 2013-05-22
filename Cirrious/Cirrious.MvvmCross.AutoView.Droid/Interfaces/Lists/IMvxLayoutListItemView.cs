@@ -5,11 +5,13 @@
 // 
 // Project Lead - Stuart Lodge, @slodge, me@slodge.com
 
+using Cirrious.CrossCore.Core;
+
 namespace Cirrious.MvvmCross.AutoView.Droid.Interfaces.Lists
 {
     public interface IMvxLayoutListItemView
+        : IMvxDataConsumer
     {
         string UniqueName { get; }
-        void BindTo(object source);
     }
 }

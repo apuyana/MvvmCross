@@ -6,25 +6,25 @@
 // Project Lead - Stuart Lodge, @slodge, me@slodge.com
 
 using System;
+using Cirrious.CrossCore.Exceptions;
+using Cirrious.CrossCore;
+using Cirrious.CrossCore.Platform;
 using Cirrious.MvvmCross.Binding;
-using Cirrious.MvvmCross.Binding.Droid.Interfaces.Views;
-using Cirrious.MvvmCross.Binding.Interfaces;
-using Cirrious.MvvmCross.ExtensionMethods;
-using Cirrious.MvvmCross.Interfaces.Platform.Diagnostics;
-using Cirrious.MvvmCross.Interfaces.ServiceProvider;
+using Cirrious.MvvmCross.Binding.Binders;
+using Cirrious.MvvmCross.Binding.Droid.BindingContext;
 using CrossUI.Core.Builder;
 
 namespace Cirrious.MvvmCross.AutoView.Droid.Builders
 {
     public class MvxBindingPropertySetter : IPropertySetter
-                                            , IMvxServiceConsumer
+
     {
-        private readonly IMvxBindingActivity _bindingActivity;
+        private readonly IMvxAndroidBindingContext _androidBindingContext;
         private readonly object _source;
 
-        public MvxBindingPropertySetter(IMvxBindingActivity bindingActivity, object source)
+        public MvxBindingPropertySetter(IMvxAndroidBindingContext androidBindingContext, object source)
         {
-            _bindingActivity = bindingActivity;
+            _androidBindingContext = androidBindingContext;
             _source = source;
         }
 
@@ -32,9 +32,9 @@ namespace Cirrious.MvvmCross.AutoView.Droid.Builders
         {
             try
             {
-                var binding = this.GetService<IMvxBinder>()
-                                  .BindSingle(_source, element, targetPropertyName, configuration);
-                _bindingActivity.RegisterBinding(binding);
+                var binding = Mvx.Resolve<IMvxBinder>()
+                                 .BindSingle(_source, element, targetPropertyName, configuration);
+                _androidBindingContext.RegisterBinding(binding);
             }
             catch (Exception exception)
             {

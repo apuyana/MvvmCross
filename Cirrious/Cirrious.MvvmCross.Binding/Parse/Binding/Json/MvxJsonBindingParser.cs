@@ -5,6 +5,9 @@
 // 
 // Project Lead - Stuart Lodge, @slodge, me@slodge.com
 
+
+#warning Consider deleting this file - everyone moved to Swiss binding?
+#if false
 using System;
 using Cirrious.MvvmCross.Binding.Interfaces.Parse;
 using Cirrious.MvvmCross.ExtensionMethods;
@@ -16,7 +19,6 @@ namespace Cirrious.MvvmCross.Binding.Parse.Binding.Json
 {
     public class MvxJsonBindingParser
         : IMvxBindingParser
-        , IMvxServiceConsumer
     {
         public bool TryParseBindingDescription(string text, out MvxSerializableBindingDescription requestedDescription)
         {
@@ -28,7 +30,7 @@ namespace Cirrious.MvvmCross.Binding.Parse.Binding.Json
 
             try
             {
-                var converter = this.GetService<IMvxJsonConverter>();
+                var converter = Mvx.Resolve<IMvxJsonConverter>();
                 requestedDescription = converter.DeserializeObject<MvxSerializableBindingDescription>(text);
             }
             catch (Exception exception)
@@ -52,7 +54,7 @@ namespace Cirrious.MvvmCross.Binding.Parse.Binding.Json
 
             try
             {
-                var converter = this.GetService<IMvxJsonConverter>();
+                var converter = Mvx.Resolve<IMvxJsonConverter>();
                 requestedBindings = converter.DeserializeObject<MvxSerializableBindingSpecification>(text);
             }
             catch (Exception exception)
@@ -66,3 +68,4 @@ namespace Cirrious.MvvmCross.Binding.Parse.Binding.Json
         }
     }
 }
+#endif

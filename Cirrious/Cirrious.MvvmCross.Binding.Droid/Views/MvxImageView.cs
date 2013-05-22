@@ -11,35 +11,39 @@ using Android.Graphics;
 using Android.Runtime;
 using Android.Util;
 using Android.Widget;
-using Cirrious.MvvmCross.Platform;
-using Cirrious.MvvmCross.Plugins.DownloadCache;
+using Cirrious.CrossCore.Core;
+using Cirrious.CrossCore;
+using Cirrious.CrossCore.Platform;
 
 namespace Cirrious.MvvmCross.Binding.Droid.Views
 {
     public class MvxImageView
         : ImageView
     {
-        static MvxImageView()
-        {
-            Cirrious.MvvmCross.Plugins.DownloadCache.PluginLoader.Instance.EnsureLoaded();
-        }
-
-        private readonly MvxDynamicImageHelper<Bitmap> _imageHelper;
+        private readonly IMvxImageHelper<Bitmap> _imageHelper;
 
         public MvxImageView(Context context, IAttributeSet attrs)
             : base(context, attrs)
         {
-            _imageHelper = new MvxDynamicImageHelper<Bitmap>();
-            _imageHelper.ImageChanged += ImageHelperOnImageChanged;
+            if (!Mvx.TryResolve(out _imageHelper))
+            {
+                MvxTrace.Error(
+                    "No IMvxImageHelper registered - you must provide an image helper before you can use a MvxImageView");
+            }
+            else
+            {
+                _imageHelper.ImageChanged += ImageHelperOnImageChanged;
+            }
+
             var typedArray = context.ObtainStyledAttributes(attrs,
                                                             MvxAndroidBindingResource.Instance
-                                                                                     .HttpImageViewStylableGroupId);
+                                                                                     .ImageViewStylableGroupId);
 
             int numStyles = typedArray.IndexCount;
             for (var i = 0; i < numStyles; ++i)
             {
                 int attributeId = typedArray.GetIndex(i);
-                if (attributeId == MvxAndroidBindingResource.Instance.HttpSourceBindId)
+                if (attributeId == MvxAndroidBindingResource.Instance.SourceBindId)
                 {
                     ImageUrl = typedArray.GetString(attributeId);
                 }
@@ -49,15 +53,25 @@ namespace Cirrious.MvvmCross.Binding.Droid.Views
 
         public string ImageUrl
         {
-            get { return Image.ImageUrl; }
-            set { Image.ImageUrl = value; }
+            get
+            {
+                if (_imageHelper == null)
+                    return null;
+                return _imageHelper.ImageUrl;
+            }
+            set
+            {
+                if (_imageHelper == null)
+                    return;
+                _imageHelper.ImageUrl = value;
+            }
         }
 
         [Obsolete("Use ImageUrl instead")]
         public string HttpImageUrl
         {
-            get { return Image.HttpImageUrl; }
-            set { Image.HttpImageUrl = value; }
+            get { return ImageUrl; }
+            set { ImageUrl = value; }
         }
 
         public MvxImageView(Context context)
@@ -70,9 +84,15 @@ namespace Cirrious.MvvmCross.Binding.Droid.Views
         {
         }
 
-        public MvxDynamicImageHelper<Bitmap> Image
+        protected override void Dispose(bool disposing)
         {
-            get { return _imageHelper; }
+            if (disposing)
+            {
+                if (_imageHelper != null)
+                    _imageHelper.Dispose();
+            }
+
+            base.Dispose(disposing);
         }
 
         private void ImageHelperOnImageChanged(object sender, MvxValueEventArgs<Bitmap> mvxValueEventArgs)

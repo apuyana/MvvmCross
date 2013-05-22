@@ -5,35 +5,42 @@
 // 
 // Project Lead - Stuart Lodge, @slodge, me@slodge.com
 
+using Cirrious.MvvmCross.AutoView.ExtensionMethods;
 using Cirrious.MvvmCross.AutoView.Touch.ExtensionMethods;
 using Cirrious.MvvmCross.AutoView.Touch.Interfaces;
-using Cirrious.MvvmCross.Binding.Interfaces;
+using Cirrious.MvvmCross.Binding.Bindings;
 using Cirrious.MvvmCross.Dialog.Touch;
 using Cirrious.MvvmCross.ViewModels;
-using Cirrious.MvvmCross.Views;
-using Cirrious.MvvmCross.Views.Attributes;
 using CrossUI.Core.Elements.Menu;
+using CrossUI.Touch.Dialog.Elements;
 using MonoTouch.UIKit;
+using Cirrious.CrossCore.IoC;
 
 namespace Cirrious.MvvmCross.AutoView.Touch.Views.Dialog
 {
-    [MvxUnconventionalView]
+    [MvxUnconventional]
     public class MvxAutoDialogTouchView
-        : MvxTouchDialogViewController<MvxViewModel>
-          , IMvxTouchAutoView<MvxViewModel>
+        : MvxDialogViewController
+          , IMvxTouchAutoView
     {
         private IParentMenu _parentMenu;
 
-        public MvxAutoDialogTouchView(MvxShowViewModelRequest request)
-            : base(request, UITableViewStyle.Grouped, null, true)
+        public MvxAutoDialogTouchView()
+            : base(UITableViewStyle.Grouped, null, true)
         {
+        }
+
+        public new MvxViewModel ViewModel
+        {
+            get { return (MvxViewModel) base.ViewModel; }
+            set { base.ViewModel = value; }
         }
 
         public override void ViewDidLoad()
         {
             base.ViewDidLoad();
 
-            Root = this.LoadDialogRoot();
+            Root = this.LoadDialogRoot<Element, RootElement>();
             _parentMenu = this.LoadMenu();
 
             if (_parentMenu != null)
@@ -52,7 +59,7 @@ namespace Cirrious.MvvmCross.AutoView.Touch.Views.Dialog
 
         public void RegisterBinding(IMvxUpdateableBinding binding)
         {
-            Bindings.Add(binding);
+            BindingContext.RegisterBinding(binding);
         }
     }
 }

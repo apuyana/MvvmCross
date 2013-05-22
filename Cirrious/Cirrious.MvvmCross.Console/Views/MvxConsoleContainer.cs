@@ -7,25 +7,19 @@
 
 using System;
 using System.Collections.Generic;
-using Cirrious.MvvmCross.Console.Interfaces;
-using Cirrious.MvvmCross.Exceptions;
-using Cirrious.MvvmCross.ExtensionMethods;
-using Cirrious.MvvmCross.Interfaces.ServiceProvider;
-using Cirrious.MvvmCross.Interfaces.ViewModels;
-using Cirrious.MvvmCross.Views;
+using Cirrious.CrossCore.Exceptions;
+using Cirrious.CrossCore;
+using Cirrious.CrossCore.Platform;
+using Cirrious.MvvmCross.ViewModels;
 
 namespace Cirrious.MvvmCross.Console.Views
 {
     public class MvxConsoleContainer
         : MvxBaseConsoleContainer
-          , IMvxConsoleNavigation
-          , IMvxServiceConsumer
     {
-        private readonly Stack<MvxShowViewModelRequest> _navigationStack = new Stack<MvxShowViewModelRequest>();
+        private readonly Stack<MvxViewModelRequest> _navigationStack = new Stack<MvxViewModelRequest>();
 
-        #region IMvxConsoleNavigation Members
-
-        public override void Navigate(MvxShowViewModelRequest request)
+        public override void Show(MvxViewModelRequest request)
         {
             lock (this)
             {
@@ -35,12 +29,18 @@ namespace Cirrious.MvvmCross.Console.Views
                     throw new MvxException("View Type not found for " + request.ViewModelType);
                 }
                 var view = (IMvxConsoleView) Activator.CreateInstance(viewType);
-                var viewModelLoader = this.GetService<IMvxViewModelLoader>();
-                var viewModel = viewModelLoader.LoadViewModel(request);
+                var viewModelLoader = Mvx.Resolve<IMvxViewModelLoader>();
+                IMvxBundle savedState = null;
+                var viewModel = viewModelLoader.LoadViewModel(request, savedState);
                 view.HackSetViewModel(viewModel);
-                this.GetService<IMvxConsoleCurrentView>().CurrentView = view;
+                Mvx.Resolve<IMvxConsoleCurrentView>().CurrentView = view;
                 _navigationStack.Push(request);
             }
+        }
+
+        public virtual void ChangePresentation(MvxPresentationHint hint)
+        {
+            MvxTrace.Warning("Hint ignored {0}", hint.GetType().Name);
         }
 
         public override void GoBack()
@@ -60,7 +60,7 @@ namespace Cirrious.MvvmCross.Console.Views
                 var backTo = _navigationStack.Pop();
 
                 // re-display the view
-                Navigate(backTo);
+                Show(backTo);
             }
         }
 
@@ -79,7 +79,5 @@ namespace Cirrious.MvvmCross.Console.Views
                     return false;
             }
         }
-
-        #endregion
     }
 }

@@ -1,4 +1,3 @@
-#region Copyright
 // <copyright file="MvxTouchViewDispatcherProvider.cs" company="Cirrious">
 // (c) Copyright Cirrious. http://www.cirrious.com
 // This source is subject to the Microsoft Public License (Ms-PL)
@@ -7,12 +6,11 @@
 // </copyright>
 // 
 // Project Lead - Stuart Lodge, Cirrious. http://www.cirrious.com
-#endregion
 
 using Cirrious.MvvmCross.Interfaces.Views;
-using Cirrious.MvvmCross.Touch.Interfaces;
+using Cirrious.MvvmCross.Mac.Interfaces;
 
-namespace Cirrious.MvvmCross.Touch.Views
+namespace Cirrious.MvvmCross.Mac.Views
 {
     public class MvxMacViewDispatcherProvider
         : IMvxViewDispatcherProvider
@@ -24,7 +22,7 @@ namespace Cirrious.MvvmCross.Touch.Views
             _presenter = presenter;
         }
 
-        public IMvxViewDispatcher Dispatcher
+        public IMvxViewDispatcher ViewDispatcher
         {
             get { return new MvxMacViewDispatcher(_presenter); }
         }

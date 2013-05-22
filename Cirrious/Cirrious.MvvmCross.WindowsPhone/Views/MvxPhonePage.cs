@@ -5,37 +5,25 @@
 // 
 // Project Lead - Stuart Lodge, @slodge, me@slodge.com
 
+using System;
 using System.Linq;
 using System.Windows.Navigation;
-using Cirrious.MvvmCross.ExtensionMethods;
-using Cirrious.MvvmCross.Interfaces.ViewModels;
-using Cirrious.MvvmCross.WindowsPhone.Interfaces;
+using Cirrious.MvvmCross.ViewModels;
+using Cirrious.MvvmCross.Views;
 using Microsoft.Phone.Controls;
 
 namespace Cirrious.MvvmCross.WindowsPhone.Views
 {
-    public abstract class MvxPhonePage<T>
+    public abstract class MvxPhonePage
         : PhoneApplicationPage
-          , IMvxWindowsPhoneView<T>
-        where T : class, IMvxViewModel
+          , IMvxPhoneView
     {
-        private T _viewModel;
+        #region IMvxPhoneView Members
 
-        #region IMvxWindowsPhoneView<T> Members
-
-        public bool IsVisible { get; set; }
-
-        public T ViewModel
+        public IMvxViewModel ViewModel
         {
-            get { return _viewModel; }
-            set
-            {
-                if (_viewModel == value)
-                    return;
-
-                _viewModel = value;
-                DataContext = ViewModel;
-            }
+            get { return (IMvxViewModel) DataContext; }
+            set { DataContext = value; }
         }
 
         public void ClearBackStack()
@@ -51,15 +39,27 @@ namespace Cirrious.MvvmCross.WindowsPhone.Views
         {
             base.OnNavigatedTo(e);
 
-            IsVisible = true;
-
-            this.OnViewCreate(e.Uri);
+            var savedState = LoadStateBundle(e);
+            this.OnViewCreate(e.Uri, savedState);
         }
 
         protected override void OnNavigatedFrom(NavigationEventArgs e)
         {
-            IsVisible = false;
+            var bundle = this.CreateSaveStateBundle();
+            SaveStateBundle(e, bundle);
+
             base.OnNavigatedFrom(e);
+        }
+
+        protected virtual IMvxBundle LoadStateBundle(NavigationEventArgs navigationEventArgs)
+        {
+            // nothing loaded by default
+            return null;
+        }
+
+        protected virtual void SaveStateBundle(NavigationEventArgs navigationEventArgs, IMvxBundle bundle)
+        {
+            // not saved by default
         }
 
         protected override void OnRemovedFromJournal(JournalEntryRemovedEventArgs e)
@@ -67,6 +67,18 @@ namespace Cirrious.MvvmCross.WindowsPhone.Views
             base.OnRemovedFromJournal(e);
 
             this.OnViewDestroy();
+        }
+    }
+
+    [Obsolete("Switch to the non-generic style")]
+    public class MvxPhonePage<TViewModel> 
+        : MvxPhonePage
+        where TViewModel : class, IMvxViewModel
+    {
+        public new TViewModel ViewModel
+        {
+            get { return (TViewModel) base.ViewModel; }
+            set { base.ViewModel = value; }
         }
     }
 }

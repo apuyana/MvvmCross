@@ -6,9 +6,8 @@
 // Project Lead - Stuart Lodge, @slodge, me@slodge.com
 
 using System.Reflection;
+using Cirrious.CrossCore.Platform;
 using Cirrious.MvvmCross.Binding.Bindings.Target;
-using Cirrious.MvvmCross.Binding.Interfaces;
-using Cirrious.MvvmCross.Interfaces.Platform.Diagnostics;
 using MonoTouch.UIKit;
 
 namespace Cirrious.MvvmCross.Binding.Touch.Target
@@ -26,13 +25,15 @@ namespace Cirrious.MvvmCross.Binding.Touch.Target
             else
             {
                 slider.ValueChanged += HandleSliderValueChanged;
-                ;
             }
         }
 
         private void HandleSliderValueChanged(object sender, System.EventArgs e)
         {
-            FireValueChanged(View.Value);
+            var view = View;
+            if (view == null)
+                return;
+            FireValueChanged(view.Value);
         }
 
         public override MvxBindingMode DefaultMode

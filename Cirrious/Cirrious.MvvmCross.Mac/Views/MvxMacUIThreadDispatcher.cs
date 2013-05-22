@@ -1,5 +1,4 @@
-﻿#region Copyright
-// <copyright file="MvxTouchUIThreadDispatcher.cs" company="Cirrious">
+﻿// <copyright file="MvxTouchUIThreadDispatcher.cs" company="Cirrious">
 // (c) Copyright Cirrious. http://www.cirrious.com
 // This source is subject to the Microsoft Public License (Ms-PL)
 // Please see license.txt on http://opensource.org/licenses/ms-pl.html
@@ -7,31 +6,24 @@
 // </copyright>
 // 
 // Project Lead - Stuart Lodge, Cirrious. http://www.cirrious.com
-#endregion
 
 using System;
 using System.Threading;
-using Cirrious.MvvmCross.ExtensionMethods;
 using Cirrious.MvvmCross.Interfaces.Views;
-using Cirrious.MvvmCross.Platform.Diagnostics;
 using System.Reflection;
 using MonoMac.AppKit;
+using Cirrious.CrossCore.Interfaces.Core;
+using Cirrious.CrossCore.Platform.Diagnostics;
+using Cirrious.CrossCore.Exceptions;
 
-namespace Cirrious.MvvmCross.Touch.Views
+namespace Cirrious.MvvmCross.Mac.Views
 {
     public abstract class MvxMacUIThreadDispatcher
         : IMvxMainThreadDispatcher
 	{
         private bool InvokeOrBeginInvoke(Action action)
         {
-#warning _stopRequested removed			
-            //if (_stopRequested)
-            //    return false;
-
 			NSApplication.SharedApplication.InvokeOnMainThread(() => {
-	            //if (_stopRequested)
-	            //    return;
-				
 				try
 				{
 					action();

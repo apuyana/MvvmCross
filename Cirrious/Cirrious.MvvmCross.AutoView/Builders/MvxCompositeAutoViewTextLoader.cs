@@ -9,11 +9,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Cirrious.MvvmCross.AutoView.Interfaces;
-using Cirrious.MvvmCross.Interfaces.ServiceProvider;
 
 namespace Cirrious.MvvmCross.AutoView.Builders
 {
-    public class MvxCompositeAutoViewTextLoader : IMvxServiceConsumer, IMvxAutoViewTextLoader
+    public class MvxCompositeAutoViewTextLoader : IMvxAutoViewTextLoader
     {
         private readonly List<IMvxAutoViewTextLoader> _subLoaders = new List<IMvxAutoViewTextLoader>();
 

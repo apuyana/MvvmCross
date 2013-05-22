@@ -5,20 +5,17 @@
 // 
 // Project Lead - Stuart Lodge, @slodge, me@slodge.com
 
+using Cirrious.CrossCore;
 using Cirrious.MvvmCross.AutoView.Builders;
 using Cirrious.MvvmCross.AutoView.Interfaces;
 using Cirrious.MvvmCross.AutoView.Touch.Builders;
 using Cirrious.MvvmCross.AutoView.Touch.Views;
-using Cirrious.MvvmCross.ExtensionMethods;
-using Cirrious.MvvmCross.Interfaces.ServiceProvider;
-using Cirrious.MvvmCross.Interfaces.Views;
+using Cirrious.MvvmCross.Views;
 using CrossUI.Core.Builder;
 
 namespace Cirrious.MvvmCross.AutoView.Touch
 {
     public class MvxAutoViewSetup
-        : IMvxServiceProducer
-          , IMvxServiceConsumer
     {
         public void Initialize()
         {
@@ -30,7 +27,14 @@ namespace Cirrious.MvvmCross.AutoView.Touch
         protected virtual void InitializeUserInterfaceBuilder()
         {
             var touchRegistry = CreateBuilderRegistry();
-            this.RegisterServiceInstance<IBuilderRegistry>(touchRegistry);
+            Mvx.RegisterSingleton<IBuilderRegistry>(touchRegistry);
+            var userInterfaceFactory = CreateUserInterfaceFactory();
+            Mvx.RegisterSingleton(userInterfaceFactory);
+        }
+
+        protected virtual IMvxUserInterfaceFactory CreateUserInterfaceFactory()
+        {
+            return new MvxTouchUserInterfaceFactory();
         }
 
         protected virtual MvxTouchBuilderRegistry CreateBuilderRegistry()
@@ -41,7 +45,7 @@ namespace Cirrious.MvvmCross.AutoView.Touch
 
         protected virtual void RegisterViewFinders()
         {
-            var container = this.GetService<IMvxViewsContainer>();
+            var container = Mvx.Resolve<IMvxViewsContainer>();
             RegisterSecondaryViewFinders(container);
             RegisterLastResortViewFinder(container);
         }
@@ -81,7 +85,7 @@ namespace Cirrious.MvvmCross.AutoView.Touch
         protected virtual void RegisterAutomaticViewTextLoader()
         {
             var loader = CreateAutoViewTextLoader();
-            this.RegisterServiceInstance(loader);
+            Mvx.RegisterSingleton(loader);
         }
 
         protected virtual IMvxAutoViewTextLoader CreateAutoViewTextLoader()

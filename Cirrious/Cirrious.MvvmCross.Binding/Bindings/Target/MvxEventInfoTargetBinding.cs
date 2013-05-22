@@ -8,21 +8,19 @@
 using System;
 using System.Reflection;
 using System.Windows.Input;
-using Cirrious.MvvmCross.Binding.Interfaces;
 
 namespace Cirrious.MvvmCross.Binding.Bindings.Target
 {
-    public class MvxEventInfoTargetBinding<T> : MvxBaseTargetBinding
+    public class MvxEventInfoTargetBinding<T> : MvxTargetBinding
         where T : EventArgs
     {
-        private readonly object _target;
         private readonly EventInfo _targetEventInfo;
 
         private ICommand _currentCommand;
 
         public MvxEventInfoTargetBinding(object target, EventInfo targetEventInfo)
+            : base(target)
         {
-            _target = target;
             _targetEventInfo = targetEventInfo;
 
             // 	addMethod is used because of error:
@@ -30,7 +28,7 @@ namespace Cirrious.MvvmCross.Binding.Bindings.Target
             // see https://bugzilla.xamarin.com/show_bug.cgi?id=3682
 
             var addMethod = _targetEventInfo.GetAddMethod();
-            addMethod.Invoke(_target, new object[] {new EventHandler<T>(HandleEvent)});
+            addMethod.Invoke(target, new object[] {new EventHandler<T>(HandleEvent)});
         }
 
         public override Type TargetType
@@ -48,7 +46,11 @@ namespace Cirrious.MvvmCross.Binding.Bindings.Target
             base.Dispose(isDisposing);
             if (isDisposing)
             {
-                _targetEventInfo.GetRemoveMethod().Invoke(_target, new object[] {new EventHandler<T>(HandleEvent)});
+                var target = Target;
+                if (target != null)
+                {
+                    _targetEventInfo.GetRemoveMethod().Invoke(target, new object[] {new EventHandler<T>(HandleEvent)});
+                }
             }
         }
 

@@ -6,21 +6,20 @@
 // Project Lead - Stuart Lodge, @slodge, me@slodge.com
 
 using System;
+using Cirrious.CrossCore;
 using Cirrious.MvvmCross.AutoView.Droid.Views.Lists;
 using Cirrious.MvvmCross.AutoView.Interfaces;
-using Cirrious.MvvmCross.ExtensionMethods;
-using Cirrious.MvvmCross.Interfaces.ServiceProvider;
-using Cirrious.MvvmCross.Interfaces.Views;
+using Cirrious.MvvmCross.Views;
 
 namespace Cirrious.MvvmCross.AutoView.Droid.Views
 {
-    public class MvxAutoListViewFinder : IMvxViewFinder, IMvxServiceConsumer
+    public class MvxAutoListViewFinder : IMvxViewFinder
     {
         public Type ListViewType { get; set; }
 
         public MvxAutoListViewFinder()
         {
-            ListViewType = typeof (MvxAutoListActivityView);
+            ListViewType = typeof (MvxAutoListActivity);
         }
 
         public Type GetViewType(Type viewModelType)
@@ -31,7 +30,7 @@ namespace Cirrious.MvvmCross.AutoView.Droid.Views
                 return ListViewType;
             }
 
-            var loader = this.GetService<IMvxAutoViewTextLoader>();
+            var loader = Mvx.Resolve<IMvxAutoViewTextLoader>();
             if (loader.HasDefinition(viewModelType, MvxAutoViewConstants.List))
             {
                 return ListViewType;

@@ -8,48 +8,20 @@
 using System;
 using System.Reflection;
 using System.Threading;
-using Cirrious.MvvmCross.ExtensionMethods;
-using Cirrious.MvvmCross.Interfaces.Views;
-using Cirrious.MvvmCross.Platform.Diagnostics;
+using Cirrious.CrossCore.Core;
+using Cirrious.CrossCore.Exceptions;
+using Cirrious.CrossCore.Platform;
 using MonoTouch.UIKit;
 
 namespace Cirrious.MvvmCross.Touch.Views
 {
     public abstract class MvxTouchUIThreadDispatcher
-        : IMvxMainThreadDispatcher
+        : MvxMainThreadDispatcher
     {
-        private bool InvokeOrBeginInvoke(Action action)
-        {
-            UIApplication.SharedApplication.InvokeOnMainThread(() =>
-                {
-                    try
-                    {
-                        action();
-                    }
-                    catch (ThreadAbortException)
-                    {
-                        throw;
-                    }
-                    catch (TargetInvocationException exception)
-                    {
-                        MvxTrace.Trace("TargetInvocateException masked " + exception.InnerException.ToLongString());
-                    }
-                    catch (Exception exception)
-                    {
-                        // note - all exceptions masked!
-                        MvxTrace.Trace("Exception masked " + exception.ToLongString());
-                    }
-                });
-            return true;
-        }
-
-        #region IMvxMainThreadDispatcher implementation
-
         public bool RequestMainThreadAction(Action action)
         {
-            return InvokeOrBeginInvoke(action);
+            UIApplication.SharedApplication.BeginInvokeOnMainThread(() => ExceptionMaskedAction(action));
+            return true;
         }
-
-        #endregion
     }
 }

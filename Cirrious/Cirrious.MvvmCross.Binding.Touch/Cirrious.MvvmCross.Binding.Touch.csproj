@@ -17,7 +17,7 @@
     <DebugSymbols>True</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>False</Optimize>
-    <OutputPath>..\..\bin\Touch\Debug</OutputPath>
+    <OutputPath>..\..\bin\Debug\Mvx\Touch\</OutputPath>
     <DefineConstants>DEBUG;MONOTOUCH</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -30,7 +30,7 @@
     <NoStdLib>True</NoStdLib>
     <DebugType>none</DebugType>
     <Optimize>False</Optimize>
-    <OutputPath>..\..\bin\Touch\Release</OutputPath>
+    <OutputPath>..\..\bin\Release\Mvx\Touch\</OutputPath>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <ConsolePause>False</ConsolePause>
@@ -46,59 +46,53 @@
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\iOS\Xamarin.MonoTouch.CSharp.targets" />
   <ItemGroup>
     <Compile Include="MvxTouchBindingBuilder.cs" />
-    <Compile Include="MvxTouchBindingSetup.cs" />
-    <Compile Include="Interfaces\Views\IMvxBindableView.cs" />
-    <Compile Include="Interfaces\IMvxBindingTouchView.cs" />
+    <Compile Include="Target\MvxUIDatePickerDateTargetBinding.cs" />
+    <Compile Include="Target\MvxUITextViewTextTargetBinding.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Target\MvxUISwitchOnTargetBinding.cs" />
-    <Compile Include="Views\MvxSimpleBindableTableViewSource.cs" />
-    <Compile Include="Views\MvxBindingTouchTabBarViewController.cs" />
-    <Compile Include="Views\MvxBaseBindableTableViewSource.cs" />
-    <Compile Include="Views\MvxBindableTableViewCell.cs" />
-    <Compile Include="Views\MvxBindableTableViewDelegate.cs" />
-    <Compile Include="ExtensionMethods\MvxBindingTouchExtensions.cs" />
-    <Compile Include="Views\MvxBindingTouchTableViewController.cs" />
-    <Compile Include="Views\MvxBindingTouchViewController.cs" />
-    <Compile Include="Views\MvxBindableTableViewSource.cs" />
-    <Compile Include="Views\MvxActionBasedBindableTableViewSource.cs" />
-    <Compile Include="Target\MvxUIEditFieldTextTargetBinding.cs" />
+    <Compile Include="Target\MvxUIViewVisibilityTargetBinding.cs" />
+    <Compile Include="Views\MvxImageView.cs" />
+    <Compile Include="Views\MvxImageViewWrapper.cs" />
+    <Compile Include="Views\MvxBaseTableViewSource.cs" />
+    <Compile Include="Views\MvxTableViewDelegate.cs" />
+    <Compile Include="Views\MvxTableViewSource.cs" />
+    <Compile Include="Views\MvxActionBasedTableViewSource.cs" />
+    <Compile Include="Target\MvxUITextFieldTextTargetBinding.cs" />
     <Compile Include="Target\MvxUISliderValueTargetBinding.cs" />
     <Compile Include="Target\MvxUIButtonTitleTargetBinding.cs" />
-    <Compile Include="Views\MvxTouchImageView.cs" />
-    <Compile Include="Views\MvxBaseBindableTableViewCell.cs" />
-    <Compile Include="Views\MvxBindingTouchCollectionViewController.cs" />
-    <Compile Include="Views\MvxBaseBindableCollectionViewSource.cs" />
-    <Compile Include="Views\MvxBaseBindableCollectionViewCell.cs" />
-    <Compile Include="Views\MvxBindableCollectionViewSource.cs" />
+    <Compile Include="Views\MvxBaseCollectionViewSource.cs" />
+    <Compile Include="Views\MvxCollectionViewSource.cs" />
+    <Compile Include="Views\MvxStandardTableViewCell.cs" />
+    <Compile Include="Views\MvxTableViewCell.cs" />
+    <Compile Include="Views\MvxCollectionViewCell.cs" />
+    <Compile Include="Views\MvxSimpleTableViewSource.cs" />
+    <Compile Include="Views\MvxImageViewLoader.cs" />
+    <Compile Include="Views\MvxStandardTableViewSource.cs" />
+    <Compile Include="Views\IMvxBindable.cs" />
+    <Compile Include="Views\MvxView.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\CrossCore\Cirrious.CrossCore.Touch\Cirrious.CrossCore.Touch.csproj">
+      <Project>{BBBCD850-E7CB-4B6C-86D9-CE01F2B1C81C}</Project>
+      <Name>Cirrious.CrossCore.Touch</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\CrossCore\Cirrious.CrossCore\Cirrious.CrossCore.csproj">
+      <Project>{CFF6F25A-3C3B-44EE-A54C-2ED4AAFF3ADB}</Project>
+      <Name>Cirrious.CrossCore</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Cirrious.MvvmCross.Binding\Cirrious.MvvmCross.Binding.csproj">
       <Project>{64DCD397-9019-41E8-A928-E5F5C5DF185B}</Project>
       <Name>Cirrious.MvvmCross.Binding</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Cirrious.MvvmCross\Cirrious.MvvmCross.csproj">
-      <Project>{B6E27475-E7D0-448C-A5CC-5097DCA1E2DD}</Project>
-      <Name>Cirrious.MvvmCross</Name>
+  </ItemGroup>
+  <ItemGroup Condition="'$(OS)' == 'Windows_NT'">
+    <ProjectReference Include="..\..\PortableSupport\System.Net.Touch\System.Net.csproj">
+      <Project>{13d0cb9b-25ec-48e0-9091-4ff0208545ca}</Project>
+      <Name>System.Net</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Cirrious.MvvmCross.Touch\Cirrious.MvvmCross.Touch.csproj">
-      <Project>{E042EDD9-E89D-4928-BF4D-27F0FC29CEDA}</Project>
-      <Name>Cirrious.MvvmCross.Touch</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Plugins\DownloadCache\Cirrious.MvvmCross.Plugins.DownloadCache.Touch\Cirrious.MvvmCross.Plugins.DownloadCache.Touch.csproj">
-      <Project>{59452E25-103C-4677-AB2A-E0D33B9FBDDA}</Project>
-      <Name>Cirrious.MvvmCross.Plugins.DownloadCache.Touch</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Plugins\DownloadCache\Cirrious.MvvmCross.Plugins.DownloadCache\Cirrious.MvvmCross.Plugins.DownloadCache.csproj">
-      <Project>{60A80EB8-2056-4771-8600-03A8DA417CFB}</Project>
-      <Name>Cirrious.MvvmCross.Plugins.DownloadCache</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Plugins\Json\Cirrious.MvvmCross.Plugins.Json\Cirrious.MvvmCross.Plugins.Json.csproj">
-      <Project>{D518E8E6-3CE6-4706-A286-E8BC6A2F64DC}</Project>
-      <Name>Cirrious.MvvmCross.Plugins.Json</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\PortableSupport\System.Windows.Touch\System.Windows.Touch.csproj">
-      <Project>{9499E72B-FD7C-4A9B-AB6C-0F9B7359257C}</Project>
-      <Name>System.Windows.Touch</Name>
+    <ProjectReference Include="..\..\PortableSupport\System.Windows.Touch\System.Windows.csproj">
+      <Project>{9499e72b-fd7c-4a9b-ab6c-0f9b7359257c}</Project>
+      <Name>System.Windows</Name>
     </ProjectReference>
   </ItemGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
@@ -108,5 +102,6 @@
   <Target Name="AfterBuild">
   </Target>
   -->
+  <ItemGroup />
   <ItemGroup />
 </Project>

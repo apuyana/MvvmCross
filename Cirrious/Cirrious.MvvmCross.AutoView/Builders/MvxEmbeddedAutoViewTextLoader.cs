@@ -8,11 +8,10 @@
 using System;
 using System.IO;
 using Cirrious.MvvmCross.AutoView.Interfaces;
-using Cirrious.MvvmCross.Interfaces.ServiceProvider;
 
 namespace Cirrious.MvvmCross.AutoView.Builders
 {
-    public class MvxEmbeddedAutoViewTextLoader : IMvxServiceConsumer, IMvxAutoViewTextLoader
+    public class MvxEmbeddedAutoViewTextLoader : IMvxAutoViewTextLoader
     {
         public bool HasDefinition(Type viewModelType, string key)
         {

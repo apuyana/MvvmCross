@@ -5,52 +5,31 @@
 // 
 // Project Lead - Stuart Lodge, @slodge, me@slodge.com
 
-#region using
-
-using Android.App;
-using Cirrious.MvvmCross.Droid.Interfaces;
-using Cirrious.MvvmCross.Interfaces.ServiceProvider;
-using Cirrious.MvvmCross.Interfaces.ViewModels;
-using Cirrious.MvvmCross.Interfaces.Views;
+using Cirrious.CrossCore.Core;
+using Cirrious.MvvmCross.ViewModels;
 using Cirrious.MvvmCross.Views;
-
-#endregion
 
 namespace Cirrious.MvvmCross.Droid.Views
 {
     public class MvxAndroidViewDispatcher
-        : MvxMainThreadDispatcher
-          , IMvxViewDispatcher
-          , IMvxServiceConsumer
+        : MvxAndroidMainThreadDispatcher
+        , IMvxViewDispatcher
     {
-        private readonly Activity _activity;
         private readonly IMvxAndroidViewPresenter _presenter;
 
-        public MvxAndroidViewDispatcher(Activity activity, IMvxAndroidViewPresenter presenter)
-            : base(activity)
+        public MvxAndroidViewDispatcher(IMvxAndroidViewPresenter presenter)
         {
-            _activity = activity;
             _presenter = presenter;
         }
 
-        #region IMvxViewDispatcher Members
-
-        public bool RequestNavigate(MvxShowViewModelRequest request)
+        public bool ShowViewModel(MvxViewModelRequest request)
         {
             return RequestMainThreadAction(() => _presenter.Show(request));
         }
 
-        public bool RequestClose(IMvxViewModel toClose)
+        public bool ChangePresentation(MvxPresentationHint hint)
         {
-            return RequestMainThreadAction(() => _presenter.Close(toClose));
+            return RequestMainThreadAction(() => _presenter.ChangePresentation(hint));
         }
-
-        public bool RequestRemoveBackStep()
-        {
-            // not supported on Android? Not sure how to do this currently...
-            return false;
-        }
-
-        #endregion
     }
 }

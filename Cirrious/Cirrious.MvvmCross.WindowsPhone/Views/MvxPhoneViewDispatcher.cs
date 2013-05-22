@@ -5,104 +5,34 @@
 // 
 // Project Lead - Stuart Lodge, @slodge, me@slodge.com
 
-#region using
-
-using System;
-using System.Threading;
-using Cirrious.MvvmCross.ExtensionMethods;
-using Cirrious.MvvmCross.Interfaces.Platform.Diagnostics;
-using Cirrious.MvvmCross.Interfaces.ServiceProvider;
-using Cirrious.MvvmCross.Interfaces.ViewModels;
-using Cirrious.MvvmCross.Interfaces.Views;
-using Cirrious.MvvmCross.Platform.Diagnostics;
+using Cirrious.MvvmCross.ViewModels;
 using Cirrious.MvvmCross.Views;
-using Cirrious.MvvmCross.WindowsPhone.Interfaces;
 using Microsoft.Phone.Controls;
-
-#endregion
 
 namespace Cirrious.MvvmCross.WindowsPhone.Views
 {
     public class MvxPhoneViewDispatcher
-        : MvxMainThreadDispatcher
+        : MvxPhoneMainThreadDispatcher
           , IMvxViewDispatcher
-          , IMvxServiceConsumer
     {
+        private readonly IMvxPhoneViewPresenter _presenter;
         private readonly PhoneApplicationFrame _rootFrame;
 
-        public MvxPhoneViewDispatcher(PhoneApplicationFrame rootFrame)
+        public MvxPhoneViewDispatcher(IMvxPhoneViewPresenter presenter, PhoneApplicationFrame rootFrame)
             : base(rootFrame.Dispatcher)
         {
+            _presenter = presenter;
             _rootFrame = rootFrame;
         }
 
-        #region IMvxViewDispatcher Members
-
-        public bool RequestNavigate(MvxShowViewModelRequest request)
+        public bool ShowViewModel(MvxViewModelRequest request)
         {
-			var requestTranslator = this.GetService<IMvxWindowsPhoneViewModelRequestTranslator>();
-            var xamlUri = requestTranslator.GetXamlUriFor(request);
-            return RequestMainThreadAction(() =>
-                {
-                    try
-                    {
-                        _rootFrame.Navigate(xamlUri);
-                    }
-                    catch (ThreadAbortException)
-                    {
-                        throw;
-                    }
-                    catch (Exception exception)
-                    {
-                        MvxTrace.Trace("Error seen during navigation request to {0} - error {1}",
-                                       request.ViewModelType.Name, exception.ToLongString());
-                    }
-                });
+            return RequestMainThreadAction(() => _presenter.Show(request));
         }
 
-        public bool RequestClose(IMvxViewModel toClose)
+        public bool ChangePresentation(MvxPresentationHint hint)
         {
-            return RequestMainThreadAction(() =>
-                {
-                    var topMost = _rootFrame.Content;
-                    if (topMost == null)
-                    {
-                        MvxTrace.Trace(MvxTraceLevel.Warning,
-                                       "Don't know how to close this viewmodel - no current content");
-                        return;
-                    }
-
-                    var viewTopMost = topMost as IMvxView;
-                    if (viewTopMost == null)
-                    {
-                        MvxTrace.Trace(MvxTraceLevel.Warning,
-                                       "Don't know how to close this viewmodel - current content is not a view");
-                        return;
-                    }
-
-                    var viewModel = viewTopMost.ReflectionGetViewModel();
-                    if (viewModel != toClose)
-                    {
-                        MvxTrace.Trace(MvxTraceLevel.Warning,
-                                       "Don't know how to close this viewmodel - viewmodel is not topmost");
-                        return;
-                    }
-
-                    if (!_rootFrame.CanGoBack)
-                    {
-                        MvxTrace.Trace(MvxTraceLevel.Warning, "Can't close - can't go back");
-                        return;
-                    }
-
-                    _rootFrame.GoBack();
-                });
+            return RequestMainThreadAction(() => _presenter.ChangePresentation(hint));
         }
-
-        public bool RequestRemoveBackStep()
-        {
-            return RequestMainThreadAction(() => _rootFrame.RemoveBackEntry());
-        }
-
-        #endregion
     }
 }

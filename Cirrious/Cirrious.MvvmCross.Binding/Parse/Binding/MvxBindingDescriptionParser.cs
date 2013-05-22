@@ -1,4 +1,4 @@
-// MvxBaseBindingDescriptionParser.cs
+// MvxBindingDescriptionParser.cs
 // (c) Copyright Cirrious Ltd. http://www.cirrious.com
 // MvvmCross is licensed using Microsoft Public License (Ms-PL)
 // Contributions and inspirations noted in readme.md and license.txt
@@ -7,36 +7,70 @@
 
 using System.Collections.Generic;
 using System.Linq;
-using Cirrious.MvvmCross.Binding.Interfaces;
-using Cirrious.MvvmCross.Binding.Interfaces.Binders;
-using Cirrious.MvvmCross.Binding.Interfaces.Parse;
-using Cirrious.MvvmCross.ExtensionMethods;
-using Cirrious.MvvmCross.Interfaces.Converters;
-using Cirrious.MvvmCross.Interfaces.Platform.Diagnostics;
-using Cirrious.MvvmCross.Interfaces.ServiceProvider;
+using Cirrious.CrossCore.Converters;
+using Cirrious.CrossCore;
+using Cirrious.CrossCore.Platform;
+using Cirrious.MvvmCross.Binding.Binders;
+using Cirrious.MvvmCross.Binding.Parse.Binding.Lang;
 
 namespace Cirrious.MvvmCross.Binding.Parse.Binding
 {
     public class MvxBindingDescriptionParser
         : IMvxBindingDescriptionParser
-        , IMvxServiceConsumer
     {
-        protected IMvxBindingParser CreateParser ()
-		{
-			return this.GetService<IMvxBindingParser>();
-		}
+        private IMvxBindingParser _bindingParser;
+        private IMvxValueConverterLookup _valueConverterLookup;
 
-		protected IMvxValueConverter FindConverter(string converterName)
-		{
-			return this.GetService<IMvxValueConverterProvider>().Find(converterName);
-		}
+        protected IMvxBindingParser BindingParser
+        {
+            get
+            {
+                _bindingParser = _bindingParser ?? Mvx.Resolve<IMvxBindingParser>();
+                return _bindingParser;
+            }
+        }
 
-        #region IMvxBindingDescriptionParser Members
+        private IMvxLanguageBindingParser _languageBindingParser;
+
+        protected IMvxLanguageBindingParser LanguageBindingParser
+        {
+            get
+            {
+                _languageBindingParser = _languageBindingParser ?? Mvx.Resolve<IMvxLanguageBindingParser>();
+                return _languageBindingParser;
+            }
+        }
+
+        protected IMvxValueConverterLookup ValueConverterLookup
+        {
+            get
+            {
+                _valueConverterLookup = _valueConverterLookup ?? Mvx.Resolve<IMvxValueConverterLookup>();
+                return _valueConverterLookup;
+            }
+        }
+
+        protected IMvxValueConverter FindConverter(string converterName)
+        {
+            return ValueConverterLookup.Find(converterName);
+        }
+
 
         public IEnumerable<MvxBindingDescription> Parse(string text)
         {
+            var parser = BindingParser;
+            return Parse(text, parser);
+        }
+
+        public IEnumerable<MvxBindingDescription> LanguageParse(string text)
+        {
+            var parser = LanguageBindingParser;
+            return Parse(text, parser);
+        }
+
+        public IEnumerable<MvxBindingDescription> Parse(string text, IMvxBindingParser parser)
+        {
             MvxSerializableBindingSpecification specification;
-            var parser = CreateParser();
             if (!parser.TryParseBindingSpecification(text, out specification))
             {
                 MvxBindingTrace.Trace(MvxTraceLevel.Error,
@@ -55,7 +89,7 @@ namespace Cirrious.MvvmCross.Binding.Parse.Binding
         public MvxBindingDescription ParseSingle(string text)
         {
             MvxSerializableBindingDescription description;
-            var parser = CreateParser();
+            var parser = BindingParser;
             if (!parser.TryParseBindingDescription(text, out description))
             {
                 MvxBindingTrace.Trace(MvxTraceLevel.Error,
@@ -83,7 +117,5 @@ namespace Cirrious.MvvmCross.Binding.Parse.Binding
                     FallbackValue = description.FallbackValue
                 };
         }
-
-        #endregion
     }
 }

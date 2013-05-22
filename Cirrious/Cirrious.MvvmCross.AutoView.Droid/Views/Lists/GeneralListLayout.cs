@@ -11,16 +11,16 @@ using System.Linq;
 using System.Windows.Input;
 using Android.Content;
 using Android.Widget;
+using Cirrious.CrossCore.Exceptions;
 using Cirrious.MvvmCross.AutoView.Droid.Interfaces.Lists;
 using Cirrious.MvvmCross.Binding.Droid.Views;
-using Cirrious.MvvmCross.Exceptions;
 using CrossUI.Core.Elements.Lists;
 
 namespace Cirrious.MvvmCross.AutoView.Droid.Views.Lists
 {
     public class GeneralListLayout : IListLayout
     {
-        private MvxBindableListView _list;
+        private MvxListView _list;
         private IEnumerable _itemsSource;
         private ICommand _itemClick;
         private IListItemLayout _defaultLayout;
@@ -46,15 +46,15 @@ namespace Cirrious.MvvmCross.AutoView.Droid.Views.Lists
             return _list;
         }
 
-        protected virtual MvxBindableListView CreateList(Context context)
+        protected virtual MvxListView CreateList(Context context)
         {
-            return new MvxBindableListView(context, null, CreateAdapter(context));
+            return new MvxListView(context, null, CreateAdapter(context));
         }
 
-        protected virtual MvxLayoutDrivenListAdapter CreateAdapter(Context context)
+        protected virtual MvxLayoutDrivenAdapter CreateAdapter(Context context)
         {
 #warning TODO - this "casting" could be more efficient
-            return new MvxLayoutDrivenListAdapter(
+            return new MvxLayoutDrivenAdapter(
                 context,
                 DefaultLayout as IMvxLayoutListItemViewFactory,
                 ItemLayouts.ToDictionary(x => x.Key, x => x.Value as IMvxLayoutListItemViewFactory));

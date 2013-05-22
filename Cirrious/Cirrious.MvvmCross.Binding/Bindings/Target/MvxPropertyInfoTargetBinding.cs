@@ -7,23 +7,23 @@
 
 using System;
 using System.Reflection;
+using Cirrious.CrossCore.Platform;
 using Cirrious.MvvmCross.Binding.Attributes;
 using Cirrious.MvvmCross.Binding.ExtensionMethods;
-using Cirrious.MvvmCross.Binding.Interfaces;
-using Cirrious.MvvmCross.Interfaces.Platform.Diagnostics;
 
 namespace Cirrious.MvvmCross.Binding.Bindings.Target
 {
-    public class MvxPropertyInfoTargetBinding : MvxBaseTargetBinding
+    public class MvxPropertyInfoTargetBinding : MvxTargetBinding
     {
-        private readonly object _target;
         private readonly PropertyInfo _targetPropertyInfo;
 
-        private UpdatingState _updatingState = UpdatingState.None;
+        private bool _isUpdatingSource;
+        private bool _isUpdatingTarget;
+        private object _updatingSourceWith;
 
         public MvxPropertyInfoTargetBinding(object target, PropertyInfo targetPropertyInfo)
+            : base(target)
         {
-            _target = target;
             _targetPropertyInfo = targetPropertyInfo;
         }
 
@@ -44,11 +44,6 @@ namespace Cirrious.MvvmCross.Binding.Bindings.Target
             base.Dispose(isDisposing);
         }
 
-        protected object Target
-        {
-            get { return _target; }
-        }
-
         public override Type TargetType
         {
             get { return _targetPropertyInfo.PropertyType; }
@@ -59,51 +54,73 @@ namespace Cirrious.MvvmCross.Binding.Bindings.Target
             get { return MvxBindingMode.OneWay; }
         }
 
+        protected virtual object GetValueByReflection()
+        {
+            var target = Target;
+            if (target == null)
+            {
+                MvxBindingTrace.Trace(MvxTraceLevel.Warning, "Weak Target is null in {0} - skipping Get", GetType().Name);
+                return null;
+            }
+            var getMethod = _targetPropertyInfo.GetGetMethod();
+            return getMethod.Invoke(target, null);
+        }
+
         public override sealed void SetValue(object value)
         {
-            if (_updatingState != UpdatingState.None)
+            MvxBindingTrace.Trace(MvxTraceLevel.Diagnostic, "Receiving setValue to " + (value ?? ""));
+            var target = Target;
+            if (target == null)
+            {
+                MvxBindingTrace.Trace(MvxTraceLevel.Warning, "Weak Target is null in {0} - skipping set", GetType().Name);
+                return;
+            }
+
+            var safeValue = MakeSafeValue(value);
+
+            // to prevent feedback loops, we don't pass on 'same value' updates from the source while we are updating it
+            if (_isUpdatingSource
+                && safeValue.Equals(_updatingSourceWith))
                 return;
 
-            MvxBindingTrace.Trace(MvxTraceLevel.Diagnostic, "Receiving setValue to " + (value ?? ""));
             try
             {
-                _updatingState = UpdatingState.UpdatingTarget;
-                var safeValue = _targetPropertyInfo.PropertyType.MakeSafeValue(value);
-                _targetPropertyInfo.SetValue(_target, safeValue, null);
+                _isUpdatingTarget = true;
+                _targetPropertyInfo.SetValue(target, safeValue, null);
             }
             finally
             {
-                _updatingState = UpdatingState.None;
+                _isUpdatingTarget = false;
             }
+        }
+
+        protected virtual object MakeSafeValue(object value)
+        {
+            var safeValue = _targetPropertyInfo.PropertyType.MakeSafeValue(value);
+            return safeValue;
         }
 
         protected override sealed void FireValueChanged(object newValue)
         {
-            if (_updatingState != UpdatingState.None)
+            // we don't allow 'reentrant' updates of any kind from target to source
+            if (_isUpdatingTarget
+                || _isUpdatingSource)
                 return;
 
             MvxBindingTrace.Trace(MvxTraceLevel.Diagnostic, "Firing changed to " + (newValue ?? ""));
             try
             {
-                _updatingState = UpdatingState.UpdatingSource;
+                _isUpdatingSource = true;
+                _updatingSourceWith = newValue;
+
                 base.FireValueChanged(newValue);
             }
             finally
             {
-                _updatingState = UpdatingState.None;
+                _isUpdatingSource = false;
+                _updatingSourceWith = null;
             }
         }
-
-        #region Nested type: UpdatingState
-
-        private enum UpdatingState
-        {
-            None,
-            UpdatingSource,
-            UpdatingTarget
-        }
-
-        #endregion
     }
 
     public class MvxPropertyInfoTargetBinding<T> : MvxPropertyInfoTargetBinding

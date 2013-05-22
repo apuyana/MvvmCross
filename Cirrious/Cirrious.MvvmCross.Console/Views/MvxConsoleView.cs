@@ -6,19 +6,28 @@
 // Project Lead - Stuart Lodge, @slodge, me@slodge.com
 
 using System;
-using Cirrious.MvvmCross.Console.Interfaces;
-using Cirrious.MvvmCross.ExtensionMethods;
-using Cirrious.MvvmCross.Interfaces.ServiceProvider;
-using Cirrious.MvvmCross.Interfaces.ViewModels;
+using Cirrious.MvvmCross.ViewModels;
+using Cirrious.MvvmCross.Views;
 
 namespace Cirrious.MvvmCross.Console.Views
 {
     public class MvxConsoleView<T>
         : IMvxConsoleView
-          , IMvxServiceConsumer
         where T : IMvxViewModel
     {
-        public T ViewModel { get; set; }
+        public object DataContext { get; set; }
+
+        public T ViewModel
+        {
+            get { return (T) DataContext; }
+            set { DataContext = value; }
+        }
+
+        IMvxViewModel IMvxView.ViewModel
+        {
+            get { return (IMvxViewModel) DataContext; }
+            set { DataContext = (T) value; }
+        }
 
         public Type ViewModelType
         {
@@ -39,11 +48,6 @@ namespace Cirrious.MvvmCross.Console.Views
 
         protected virtual void OnViewModelChanged()
         {
-        }
-
-        public bool IsVisible
-        {
-			get { return this.GetService<IMvxConsoleCurrentView>().CurrentView == this; }
         }
     }
 }

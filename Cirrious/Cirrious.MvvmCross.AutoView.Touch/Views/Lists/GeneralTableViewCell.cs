@@ -7,20 +7,21 @@
 
 using System;
 using System.Collections.Generic;
-using System.Windows.Input;
-using Cirrious.MvvmCross.Binding.Interfaces;
+using Cirrious.CrossCore.Core;
+using Cirrious.CrossCore;
+using Cirrious.CrossCore.Platform;
+using Cirrious.MvvmCross.Binding.Binders;
 using Cirrious.MvvmCross.Binding.Touch.Views;
-using Cirrious.MvvmCross.Platform;
-using Cirrious.MvvmCross.Plugins.DownloadCache;
 using MonoTouch.Foundation;
 using MonoTouch.UIKit;
+using System.Windows.Input;
 
 namespace Cirrious.MvvmCross.AutoView.Touch.Views.Lists
 {
     public class GeneralTableViewCell
-        : MvxBaseBindableTableViewCell
+        : MvxTableViewCell
     {
-        private MvxDynamicImageHelper<UIImage> _imageHelper;
+        private IMvxImageHelper<UIImage> _imageHelper;
 
         public GeneralTableViewCell(string bindingText, IntPtr handle)
             : base(bindingText, handle)
@@ -51,7 +52,7 @@ namespace Cirrious.MvvmCross.AutoView.Touch.Views.Lists
 
         private void InitialiseImageHelper()
         {
-            _imageHelper = new MvxDynamicImageHelper<UIImage>();
+            _imageHelper = Mvx.Resolve<IMvxImageHelper<UIImage>>();
             _imageHelper.ImageChanged += ImageHelperOnImageChanged;
         }
 
@@ -73,7 +74,7 @@ namespace Cirrious.MvvmCross.AutoView.Touch.Views.Lists
             set { _imageHelper.ImageUrl = value; }
         }
 
-        public MvxDynamicImageHelper<UIImage> Image
+        public IMvxImageHelper<UIImage> Image
         {
             get { return _imageHelper; }
         }

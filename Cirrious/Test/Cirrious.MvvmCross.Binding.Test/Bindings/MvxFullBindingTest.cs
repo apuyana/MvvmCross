@@ -1,11 +1,18 @@
-﻿using System;
+﻿// MvxFullBindingTest.cs
+// (c) Copyright Cirrious Ltd. http://www.cirrious.com
+// MvvmCross is licensed using Microsoft Public License (Ms-PL)
+// Contributions and inspirations noted in readme.md and license.txt
+// 
+// Project Lead - Stuart Lodge, @slodge, me@slodge.com
+
+using System;
+using Cirrious.CrossCore.Converters;
+using Cirrious.MvvmCross.Binding.Binders;
 using Cirrious.MvvmCross.Binding.Bindings;
-using Cirrious.MvvmCross.Binding.Interfaces;
-using Cirrious.MvvmCross.Binding.Interfaces.Bindings.Source;
-using Cirrious.MvvmCross.Binding.Interfaces.Bindings.Source.Construction;
-using Cirrious.MvvmCross.Binding.Interfaces.Bindings.Target;
-using Cirrious.MvvmCross.Binding.Interfaces.Bindings.Target.Construction;
-using Cirrious.MvvmCross.Interfaces.Converters;
+using Cirrious.MvvmCross.Binding.Bindings.Source;
+using Cirrious.MvvmCross.Binding.Bindings.Source.Construction;
+using Cirrious.MvvmCross.Binding.Bindings.Target;
+using Cirrious.MvvmCross.Binding.Bindings.Target.Construction;
 using Cirrious.MvvmCross.Test.Core;
 using Moq;
 using NUnit.Framework;
@@ -13,7 +20,7 @@ using NUnit.Framework;
 namespace Cirrious.MvvmCross.Binding.Test.Bindings
 {
     [TestFixture]
-    public class MvxFullBindingTest : BaseIoCSupportingTest
+    public class MvxFullBindingTest : MvxIoCSupportingTest
     {
         public class MyBinding : MvxFullBinding
         {
@@ -75,11 +82,14 @@ namespace Cirrious.MvvmCross.Binding.Test.Bindings
 
         private void TestCommon(MvxBindingMode bindingMode, bool expectSourceBinding, bool expectTargetBinding)
         {
+            ClearAll();
+            MvxBindingSingletonCache.Initialise();
+
             var mockSourceBindingFactory = new Mock<IMvxSourceBindingFactory>();
-            Ioc.RegisterServiceInstance<IMvxSourceBindingFactory>(mockSourceBindingFactory.Object);
+            Ioc.RegisterSingleton(mockSourceBindingFactory.Object);
 
             var mockTargetBindingFactory = new Mock<IMvxTargetBindingFactory>();
-            Ioc.RegisterServiceInstance<IMvxTargetBindingFactory>(mockTargetBindingFactory.Object);
+            Ioc.RegisterSingleton(mockTargetBindingFactory.Object);
 
             var sourceText = "sourceText";
             var targetName = "targetName";
@@ -88,7 +98,7 @@ namespace Cirrious.MvvmCross.Binding.Test.Bindings
             var converterParameter = new {Value = 3};
             var fallbackValue = new {Value = 4};
             var converter = new Mock<IMvxValueConverter>();
-            var bindingDescription = new MvxBindingDescription()
+            var bindingDescription = new MvxBindingDescription
                 {
                     Converter = converter.Object,
                     ConverterParameter = converterParameter,
@@ -115,12 +125,14 @@ namespace Cirrious.MvvmCross.Binding.Test.Bindings
             //var sourceBindingTimes = expectSourceBinding ? Times.Once() : Times.Never();
             //mockSourceBinding.Verify(x => x.Changed += It.IsAny<EventHandler<MvxSourcePropertyBindingEventArgs>>(), sourceBindingTimes);
             mockSourceBindingFactory
-                .Verify(x => x.CreateBinding(It.Is<object>(s => s == source), It.Is<string>(s => s == sourceText)), Times.Once());
+                .Verify(x => x.CreateBinding(It.Is<object>(s => s == source), It.Is<string>(s => s == sourceText)),
+                        Times.Once());
 
             //var targetBindingTimes = expectSourceBinding ? Times.Once() : Times.Never();
             //mockTargetBinding.Verify(x => x.ValueChanged += It.IsAny<EventHandler<MvxTargetChangedEventArgs>>(), targetBindingTimes);
             mockTargetBindingFactory
-                .Verify(x => x.CreateBinding(It.Is<object>(s => s == target), It.Is<string>(s => s == targetName)), Times.Once());
+                .Verify(x => x.CreateBinding(It.Is<object>(s => s == target), It.Is<string>(s => s == targetName)),
+                        Times.Once());
         }
     }
 }

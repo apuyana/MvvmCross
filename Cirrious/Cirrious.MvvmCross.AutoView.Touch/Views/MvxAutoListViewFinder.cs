@@ -6,15 +6,14 @@
 // Project Lead - Stuart Lodge, @slodge, me@slodge.com
 
 using System;
+using Cirrious.CrossCore;
 using Cirrious.MvvmCross.AutoView.Interfaces;
 using Cirrious.MvvmCross.AutoView.Touch.Views.Lists;
-using Cirrious.MvvmCross.ExtensionMethods;
-using Cirrious.MvvmCross.Interfaces.ServiceProvider;
-using Cirrious.MvvmCross.Interfaces.Views;
+using Cirrious.MvvmCross.Views;
 
 namespace Cirrious.MvvmCross.AutoView.Touch.Views
 {
-    public class MvxAutoListViewFinder : IMvxViewFinder, IMvxServiceConsumer
+    public class MvxAutoListViewFinder : IMvxViewFinder
     {
         public Type ListViewType { get; set; }
 
@@ -31,7 +30,7 @@ namespace Cirrious.MvvmCross.AutoView.Touch.Views
                 return ListViewType;
             }
 
-            var loader = this.GetService<IMvxAutoViewTextLoader>();
+            var loader = Mvx.Resolve<IMvxAutoViewTextLoader>();
             if (loader.HasDefinition(viewModelType, MvxAutoViewConstants.List))
             {
                 return ListViewType;

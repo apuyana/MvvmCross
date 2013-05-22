@@ -7,15 +7,14 @@
 
 using System;
 using System.Reflection;
+using Cirrious.CrossCore.Platform;
 using Cirrious.MvvmCross.Binding.Bindings.Target;
 using Cirrious.MvvmCross.Binding.Droid.Views;
-using Cirrious.MvvmCross.Binding.Interfaces;
-using Cirrious.MvvmCross.Interfaces.Platform.Diagnostics;
 
 namespace Cirrious.MvvmCross.Binding.Droid.Target
 {
-    public class MvxAutoCompleteTextViewSelectedObjectTargetBinding :
-        MvxPropertyInfoTargetBinding<MvxBindableAutoCompleteTextView>
+    public class MvxAutoCompleteTextViewSelectedObjectTargetBinding
+        : MvxPropertyInfoTargetBinding<MvxAutoCompleteTextView>
     {
         public MvxAutoCompleteTextViewSelectedObjectTargetBinding(object target, PropertyInfo targetPropertyInfo)
             : base(target, targetPropertyInfo)
@@ -50,7 +49,7 @@ namespace Cirrious.MvvmCross.Binding.Droid.Target
                 var autoComplete = View;
                 if (autoComplete != null)
                 {
-                    autoComplete.PartialTextChanged -= AutoCompleteOnSelectedObjectChanged;
+                    autoComplete.SelectedObjectChanged -= AutoCompleteOnSelectedObjectChanged;
                 }
             }
         }

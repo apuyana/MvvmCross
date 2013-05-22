@@ -6,16 +6,13 @@
 // Project Lead - Stuart Lodge, @slodge, me@slodge.com
 
 using System;
-using Cirrious.MvvmCross.Exceptions;
-using Cirrious.MvvmCross.ExtensionMethods;
-using Cirrious.MvvmCross.Interfaces.ServiceProvider;
-using Cirrious.MvvmCross.Localization.Interfaces;
+using Cirrious.CrossCore.Exceptions;
+using Cirrious.CrossCore;
 
 namespace Cirrious.MvvmCross.Localization
 {
     public class MvxLanguageBinder
         : IMvxLanguageBinder
-        , IMvxServiceConsumer
     {
         private readonly string _namespaceName;
         private readonly string _typeName;
@@ -33,7 +30,7 @@ namespace Cirrious.MvvmCross.Localization
 
         private IMvxTextProvider _cachedTextProvider;
 
-        private IMvxTextProvider TextProvider
+        protected virtual IMvxTextProvider TextProvider
         {
             get
             {
@@ -42,7 +39,7 @@ namespace Cirrious.MvvmCross.Localization
 
                 lock (this)
                 {
-					this.TryGetService<IMvxTextProvider>(out _cachedTextProvider);
+                    Mvx.TryResolve(out _cachedTextProvider);
                     if (_cachedTextProvider == null)
                     {
                         throw new MvxException(
@@ -53,24 +50,20 @@ namespace Cirrious.MvvmCross.Localization
             }
         }
 
-        #region Implementation of IMvxLanguageBinder
-
-        public string GetText(string entryKey)
+        public virtual string GetText(string entryKey)
         {
             return GetText(_namespaceName, _typeName, entryKey);
         }
 
-        public string GetText(string entryKey, params object[] args)
+        public virtual string GetText(string entryKey, params object[] args)
         {
             var format = GetText(entryKey);
             return string.Format(format, args);
         }
 
-        private string GetText(string namespaceKey, string typeKey, string entryKey)
+        protected virtual string GetText(string namespaceKey, string typeKey, string entryKey)
         {
             return TextProvider.GetText(namespaceKey, typeKey, entryKey);
         }
-
-        #endregion
     }
 }

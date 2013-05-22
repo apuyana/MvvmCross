@@ -19,10 +19,10 @@
     <TargetFrameworkVersion>v1.6</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
+    <DebugSymbols>True</DebugSymbols>
     <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>..\..\bin\Droid\Debug\</OutputPath>
+    <Optimize>False</Optimize>
+    <OutputPath>..\..\bin\Debug\Mvx\Droid\</OutputPath>
     <DefineConstants>TRACE;DEBUG;MonoDroid</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -30,13 +30,13 @@
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>..\..\bin\Droid\Release\</OutputPath>
+    <Optimize>True</Optimize>
+    <OutputPath>..\..\bin\Release\Mvx\Droid\</OutputPath>
     <DefineConstants>DEBUG;TRACE;MonoDroid</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <AndroidLinkMode>SdkOnly</AndroidLinkMode>
-    <AndroidUseSharedRuntime>false</AndroidUseSharedRuntime>
+    <AndroidUseSharedRuntime>False</AndroidUseSharedRuntime>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Mono.Android" />
@@ -46,43 +46,66 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ExtensionMethods\MvxDateTimeExtensionMethods.cs" />
-    <Compile Include="Interfaces\IMvxAndroidCurrentTopActivity.cs" />
-    <Compile Include="Interfaces\IMvxAndroidViewModelRequestTranslator.cs" />
-    <Compile Include="Interfaces\IMvxAndroidActivityLifeTimeListener.cs" />
-    <Compile Include="Interfaces\IMvxAndroidGlobals.cs" />
-    <Compile Include="Interfaces\IMvxAndroidSplashScreenActivity.cs" />
-    <Compile Include="Interfaces\IMvxBaseAndroidView.cs" />
-    <Compile Include="Interfaces\IMvxIntentResultSink.cs" />
-    <Compile Include="Interfaces\IMvxIntentResultSource.cs" />
-    <Compile Include="Interfaces\MvxIntentRequestCode.cs" />
-    <Compile Include="Interfaces\MvxIntentResultEventArgs.cs" />
-    <Compile Include="Platform\Tasks\MvxIntentResultSink.cs" />
-    <Compile Include="Interfaces\MvxTranslatedIntent.cs" />
-    <Compile Include="Interfaces\IMvxAndroidSubViewModelCache.cs" />
-    <Compile Include="Interfaces\IMvxAndroidViewPresenter.cs" />
+    <Compile Include="Views\IMvxAndroidViewModelLoader.cs" />
+    <Compile Include="Views\IMvxSingleViewModelCache.cs" />
+    <Compile Include="Views\IMvxAndroidViewModelRequestTranslator.cs" />
+    <Compile Include="Platform\IMvxAndroidActivityLifeTimeListener.cs" />
+    <Compile Include="Views\IMvxAndroidSplashScreenActivity.cs" />
+    <Compile Include="Views\MvxSingleViewModelCache.cs" />
+    <Compile Include="Platform\MvxIntentResultSink.cs" />
+    <Compile Include="Views\MvxTranslatedIntent.cs" />
+    <Compile Include="Views\IMvxChildViewModelCache.cs" />
+    <Compile Include="Views\IMvxAndroidViewPresenter.cs" />
     <Compile Include="Platform\MvxAndroidSetupSingleton.cs" />
-    <Compile Include="Views\MvxAndroidViewDispatcherProvider.cs" />
+    <Compile Include="Simple\MvxSimpleAndroidSetup.cs" />
+    <Compile Include="Simple\MvxSimpleBindingActivity.cs" />
+    <Compile Include="Simple\MvxSimpleEmptyAndroidApp.cs" />
+    <Compile Include="Views\IMvxChildViewModelOwner.cs" />
+    <Compile Include="Platform\IMvxSavedStateConverter.cs" />
+    <Compile Include="Views\MvxActivityAdapter.cs" />
+    <Compile Include="Views\MvxActivityViewExtensions.cs" />
     <Compile Include="Views\MvxAndroidViewPresenter.cs" />
-    <Compile Include="Views\MvxAndroidLifeTimeMonitor.cs" />
-    <Compile Include="Interfaces\IMvxAndroidContextSource.cs" />
-    <Compile Include="Platform\MvxBaseAndroidSetup.cs" />
-    <Compile Include="Views\MvxBaseSplashScreenActivity.cs" />
-    <Compile Include="Views\MvxTabActivityView.cs">
+    <Compile Include="Views\MvxAndroidLifetimeMonitor.cs" />
+    <Compile Include="Platform\MvxAndroidSetup.cs" />
+    <Compile Include="Views\MvxSplashScreenActivity.cs" />
+    <Compile Include="Views\MvxBindingActivityAdapter.cs" />
+    <Compile Include="Views\MvxChildViewModelOwnerAdapter.cs" />
+    <Compile Include="Views\MvxChildViewModelOwnerExtensions.cs" />
+    <Compile Include="Views\MvxSavedStateConverter.cs" />
+    <Compile Include="Views\MvxTabActivity.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Platform\MvxDebugTrace.cs" />
-    <Compile Include="Interfaces\IMvxAndroidView.cs" />
-    <Compile Include="ExtensionMethods\MvxAndroidActivityExtensionMethods.cs" />
-    <Compile Include="Platform\Tasks\MvxAndroidTask.cs" />
-    <Compile Include="Views\MvxMainThreadDispatcher.cs" />
+    <Compile Include="Views\IMvxAndroidView.cs" />
+    <Compile Include="Platform\MvxAndroidTask.cs" />
+    <Compile Include="Views\MvxAndroidMainThreadDispatcher.cs" />
     <Compile Include="Views\MvxAndroidViewDispatcher.cs" />
     <Compile Include="Views\MvxAndroidViewsContainer.cs" />
-    <Compile Include="Views\MvxActivityView.cs" />
-    <Compile Include="Views\MvxAndroidSubViewModelCache.cs" />
+    <Compile Include="Views\MvxActivity.cs" />
+    <Compile Include="Views\MvxChildViewModelCache.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\CrossCore\Cirrious.CrossCore.Droid\Cirrious.CrossCore.Droid.csproj">
+      <Project>{CAF8935F-56FE-4485-9D34-4A38FE79F6C9}</Project>
+      <Name>Cirrious.CrossCore.Droid</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\CrossCore\Cirrious.CrossCore\Cirrious.CrossCore.csproj">
+      <Project>{CFF6F25A-3C3B-44EE-A54C-2ED4AAFF3ADB}</Project>
+      <Name>Cirrious.CrossCore</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Cirrious.MvvmCross.Binding.Droid\Cirrious.MvvmCross.Binding.Droid.csproj">
+      <Project>{47FD89C3-19DC-4BD2-9B6D-FB8363BE7EB9}</Project>
+      <Name>Cirrious.MvvmCross.Binding.Droid</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Cirrious.MvvmCross.Binding\Cirrious.MvvmCross.Binding.csproj">
+      <Project>{64DCD397-9019-41E8-A928-E5F5C5DF185B}</Project>
+      <Name>Cirrious.MvvmCross.Binding</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Cirrious.MvvmCross.Localisation\Cirrious.MvvmCross.Localization.csproj">
+      <Project>{d89351c1-d48f-4ad0-a0b9-353a93425ab7}</Project>
+      <Name>Cirrious.MvvmCross.Localization</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Cirrious.MvvmCross\Cirrious.MvvmCross.csproj">
       <Project>{B6E27475-E7D0-448C-A5CC-5097DCA1E2DD}</Project>
       <Name>Cirrious.MvvmCross</Name>

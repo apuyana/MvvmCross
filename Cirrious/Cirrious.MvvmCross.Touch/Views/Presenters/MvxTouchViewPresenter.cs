@@ -5,13 +5,10 @@
 // 
 // Project Lead - Stuart Lodge, @slodge, me@slodge.com
 
-using Cirrious.MvvmCross.Exceptions;
-using Cirrious.MvvmCross.ExtensionMethods;
-using Cirrious.MvvmCross.Interfaces.Platform.Diagnostics;
-using Cirrious.MvvmCross.Interfaces.ServiceProvider;
-using Cirrious.MvvmCross.Interfaces.ViewModels;
-using Cirrious.MvvmCross.Platform.Diagnostics;
-using Cirrious.MvvmCross.Touch.Interfaces;
+using Cirrious.CrossCore.Exceptions;
+using Cirrious.CrossCore;
+using Cirrious.CrossCore.Platform;
+using Cirrious.MvvmCross.ViewModels;
 using Cirrious.MvvmCross.Views;
 using MonoTouch.UIKit;
 
@@ -19,24 +16,21 @@ namespace Cirrious.MvvmCross.Touch.Views.Presenters
 {
     public class MvxTouchViewPresenter
         : MvxBaseTouchViewPresenter
-          , IMvxServiceConsumer
     {
         private readonly UIApplicationDelegate _applicationDelegate;
         private readonly UIWindow _window;
 
         private UINavigationController _masterNavigationController;
 
-		protected virtual UINavigationController MasterNavigationController {
-			get {
-				return _masterNavigationController;
-			}
-		}
+        public virtual UINavigationController MasterNavigationController
+        {
+            get { return _masterNavigationController; }
+        }
 
-		protected virtual UIWindow Window {
-			get {
-				return _window;
-			}
-		}
+        protected virtual UIWindow Window
+        {
+            get { return _window; }
+        }
 
         public MvxTouchViewPresenter(UIApplicationDelegate applicationDelegate, UIWindow window)
         {
@@ -44,19 +38,31 @@ namespace Cirrious.MvvmCross.Touch.Views.Presenters
             _window = window;
         }
 
-        public override void Show(MvxShowViewModelRequest request)
+        public override void Show(MvxViewModelRequest request)
         {
             var view = CreateView(request);
 
-            if (request.ClearTop)
-                ClearBackStack();
+#warning Need to reinsert ClearTop type functionality here
+            //if (request.ClearTop)
+            //    ClearBackStack();
 
             Show(view);
         }
 
-        private IMvxTouchView CreateView(MvxShowViewModelRequest request)
+        public override void ChangePresentation(MvxPresentationHint hint)
         {
-			return this.GetService<IMvxTouchViewCreator>().CreateView(request);
+            if (hint is MvxClosePresentationHint)
+            {
+                Close((hint as MvxClosePresentationHint).ViewModelToClose);
+                return;
+            }
+
+            base.ChangePresentation(hint);
+        }
+
+        private IMvxTouchView CreateView(MvxViewModelRequest request)
+        {
+            return Mvx.Resolve<IMvxTouchViewCreator>().CreateView(request);
         }
 
         public virtual void Show(IMvxTouchView view)
@@ -71,25 +77,25 @@ namespace Cirrious.MvvmCross.Touch.Views.Presenters
                 _masterNavigationController.PushViewController(viewController, true /*animated*/);
         }
 
-        public override void CloseModalViewController()
+		public virtual void CloseModalViewController()
         {
             _masterNavigationController.PopViewControllerAnimated(true);
         }
 
-        public override void Close(IMvxViewModel toClose)
+		public virtual void Close(IMvxViewModel toClose)
         {
             var topViewController = _masterNavigationController.TopViewController;
 
             if (topViewController == null)
             {
-                MvxTrace.Trace(MvxTraceLevel.Warning, "Don't know how to close this viewmodel - no topmost");
+                MvxTrace.Warning( "Don't know how to close this viewmodel - no topmost");
                 return;
             }
 
             var topView = topViewController as IMvxTouchView;
             if (topView == null)
             {
-                MvxTrace.Trace(MvxTraceLevel.Warning,
+                MvxTrace.Warning(
                                "Don't know how to close this viewmodel - topmost is not a touchview");
                 return;
             }
@@ -97,7 +103,7 @@ namespace Cirrious.MvvmCross.Touch.Views.Presenters
             var viewModel = topView.ReflectionGetViewModel();
             if (viewModel != toClose)
             {
-                MvxTrace.Trace(MvxTraceLevel.Warning,
+                MvxTrace.Warning(
                                "Don't know how to close this viewmodel - topmost view does not present this viewmodel");
                 return;
             }
@@ -105,7 +111,8 @@ namespace Cirrious.MvvmCross.Touch.Views.Presenters
             _masterNavigationController.PopViewControllerAnimated(true);
         }
 
-        public override void ClearBackStack()
+#warning Unused
+		public virtual void ClearBackStack()
         {
             if (_masterNavigationController == null)
                 return;
@@ -134,14 +141,14 @@ namespace Cirrious.MvvmCross.Touch.Views.Presenters
 
             OnMasterNavigationControllerCreated();
 
-			SetWindowRootViewController(_masterNavigationController);
+            SetWindowRootViewController(_masterNavigationController);
         }
 
-		protected virtual void SetWindowRootViewController (UIViewController controller)
-		{
-			_window.AddSubview(controller.View);
-			_window.RootViewController = controller;
-		}
+        protected virtual void SetWindowRootViewController(UIViewController controller)
+        {
+            _window.AddSubview(controller.View);
+            _window.RootViewController = controller;
+        }
 
         protected virtual void OnMasterNavigationControllerCreated()
         {

@@ -5,29 +5,29 @@
 // 
 // Project Lead - Stuart Lodge, @slodge, me@slodge.com
 
+using Cirrious.MvvmCross.AutoView.ExtensionMethods;
 using Cirrious.MvvmCross.AutoView.Touch.ExtensionMethods;
 using Cirrious.MvvmCross.AutoView.Touch.Interfaces;
-using Cirrious.MvvmCross.Binding.Interfaces;
-using Cirrious.MvvmCross.Binding.Touch.Views;
+using Cirrious.MvvmCross.Touch.Views;
 using Cirrious.MvvmCross.ViewModels;
-using Cirrious.MvvmCross.Views;
-using Cirrious.MvvmCross.Views.Attributes;
 using CrossUI.Core.Elements.Menu;
 using MonoTouch.UIKit;
+using Cirrious.CrossCore.IoC;
 
 namespace Cirrious.MvvmCross.AutoView.Touch.Views.Lists
 {
-    [MvxUnconventionalView]
+    [MvxUnconventional]
     public class MvxAutoListActivityView
-        : MvxBindingTouchTableViewController<MvxViewModel>
-          , IMvxTouchAutoView<MvxViewModel>
+        : MvxTableViewController
+          , IMvxTouchAutoView
     {
         private IParentMenu _parentMenu;
         private GeneralListLayout _list;
 
-        public MvxAutoListActivityView(MvxShowViewModelRequest request)
-            : base(request)
+        public new MvxViewModel ViewModel
         {
+            get { return (MvxViewModel) base.ViewModel; }
+            set { base.ViewModel = value; }
         }
 
         public override void ViewDidLoad()
@@ -36,7 +36,7 @@ namespace Cirrious.MvvmCross.AutoView.Touch.Views.Lists
 
             _parentMenu = this.LoadMenu();
 
-            _list = this.LoadList();
+            _list = this.LoadList<GeneralListLayout>();
             var source = _list.InitialiseSource(TableView);
             TableView.Source = source;
             TableView.ReloadData();
@@ -53,11 +53,6 @@ namespace Cirrious.MvvmCross.AutoView.Touch.Views.Lists
         private void ShowActionMenu()
         {
             this.ShowOptionsMenu(_parentMenu);
-        }
-
-        public void RegisterBinding(IMvxUpdateableBinding binding)
-        {
-            Bindings.Add(binding);
         }
 
         /*

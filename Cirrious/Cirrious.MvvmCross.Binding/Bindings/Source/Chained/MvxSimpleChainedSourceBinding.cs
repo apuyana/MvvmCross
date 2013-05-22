@@ -7,7 +7,6 @@
 
 using System.Collections.Generic;
 using Cirrious.MvvmCross.Binding.Parse.PropertyPath.PropertyTokens;
-using Cirrious.MvvmCross.Interfaces.Platform.Diagnostics;
 
 namespace Cirrious.MvvmCross.Binding.Bindings.Source.Chained
 {
@@ -17,7 +16,7 @@ namespace Cirrious.MvvmCross.Binding.Bindings.Source.Chained
         public MvxSimpleChainedSourceBinding(
             object source,
             MvxPropertyNamePropertyToken propertyNamePropertyToken,
-            IList<MvxBasePropertyToken> childTokens)
+            IList<MvxPropertyToken> childTokens)
             : base(source, propertyNamePropertyToken.PropertyName, childTokens)
         {
             UpdateChildBinding();

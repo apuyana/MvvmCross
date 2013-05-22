@@ -6,41 +6,25 @@
 // Project Lead - Stuart Lodge, @slodge, me@slodge.com
 
 using System;
+using Cirrious.CrossCore.Exceptions;
+using Cirrious.CrossCore;
+using Cirrious.CrossCore.Platform;
 using Cirrious.MvvmCross.AutoView.Interfaces;
-using Cirrious.MvvmCross.Exceptions;
-using Cirrious.MvvmCross.ExtensionMethods;
-using Cirrious.MvvmCross.Interfaces.Platform.Diagnostics;
-using Cirrious.MvvmCross.Interfaces.ServiceProvider;
-using Cirrious.MvvmCross.Platform.Diagnostics;
-using Cirrious.MvvmCross.Plugins.ResourceLoader;
 
 namespace Cirrious.MvvmCross.AutoView.Builders
 {
-    public class MvxResourceAutoViewTextLoader : IMvxServiceConsumer, IMvxAutoViewTextLoader
+    public class MvxResourceAutoViewTextLoader : IMvxAutoViewTextLoader
     {
-        private static bool _ensureLoadedCalled;
-
-        private static void EnsureLoaded()
-        {
-            if (_ensureLoadedCalled)
-                return;
-
-            Cirrious.MvvmCross.Plugins.ResourceLoader.PluginLoader.Instance.EnsureLoaded();
-            _ensureLoadedCalled = true;
-        }
-
         public bool HasDefinition(Type viewModelType, string key)
         {
-            EnsureLoaded();
-            var service = this.GetService<IMvxResourceLoader>();
+            var service = Mvx.Resolve<IMvxResourceLoader>();
             var path = PathForView(viewModelType.Name, key);
             return service.ResourceExists(path);
         }
 
         public string GetDefinition(Type viewModelType, string key)
         {
-            EnsureLoaded();
-            var service = this.GetService<IMvxResourceLoader>();
+            var service = Mvx.Resolve<IMvxResourceLoader>();
             var path = PathForView(viewModelType.Name, key);
             try
             {
@@ -48,7 +32,7 @@ namespace Cirrious.MvvmCross.AutoView.Builders
             }
             catch (MvxException)
             {
-                MvxTrace.Trace(MvxTraceLevel.Warning, "Definition file not loaded {0}", path);
+                MvxTrace.Warning( "Definition file not loaded {0}", path);
                 return null;
             }
         }

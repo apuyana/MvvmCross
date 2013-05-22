@@ -5,6 +5,10 @@
 // 
 // Project Lead - Stuart Lodge, @slodge, me@slodge.com
 
+
+#warning Consider deleting this file - everyone moved to Swiss binding?
+#if false
+
 using System;
 using Cirrious.MvvmCross.Binding.Interfaces.Parse;
 using Cirrious.MvvmCross.Binding.Parse.Binding.Json;
@@ -18,7 +22,6 @@ namespace Cirrious.MvvmCross.Binding.Parse.Binding.Composite
 {
     public class MvxCompositeBindingParser
         : IMvxBindingParser
-        , IMvxServiceConsumer
     {
         private readonly IMvxBindingParser _jsonBindingParser;
         private readonly IMvxBindingParser _swissBindingParser;
@@ -31,6 +34,8 @@ namespace Cirrious.MvvmCross.Binding.Parse.Binding.Composite
 
         private IMvxBindingParser ChooseParser(string text)
         {
+			text = text.TrimStart();
+
             if (string.IsNullOrEmpty(text))
                 return _swissBindingParser;
 
@@ -55,3 +60,4 @@ namespace Cirrious.MvvmCross.Binding.Parse.Binding.Composite
         }
     }
 }
+#endif

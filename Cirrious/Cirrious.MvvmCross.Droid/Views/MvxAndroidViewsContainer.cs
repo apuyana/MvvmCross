@@ -5,19 +5,13 @@
 // 
 // Project Lead - Stuart Lodge, @slodge, me@slodge.com
 
-#region using
-
 using System;
 using Android.Content;
-using Cirrious.MvvmCross.Droid.Interfaces;
-using Cirrious.MvvmCross.Exceptions;
-using Cirrious.MvvmCross.ExtensionMethods;
-using Cirrious.MvvmCross.Interfaces.Platform;
-using Cirrious.MvvmCross.Interfaces.ServiceProvider;
-using Cirrious.MvvmCross.Interfaces.ViewModels;
+using Cirrious.CrossCore.Exceptions;
+using Cirrious.CrossCore;
+using Cirrious.CrossCore.Platform;
+using Cirrious.MvvmCross.ViewModels;
 using Cirrious.MvvmCross.Views;
-
-#endregion
 
 namespace Cirrious.MvvmCross.Droid.Views
 {
@@ -25,7 +19,6 @@ namespace Cirrious.MvvmCross.Droid.Views
         : MvxViewsContainer
           , IMvxAndroidViewModelLoader
           , IMvxAndroidViewModelRequestTranslator
-          , IMvxServiceConsumer
     {
         private const string ExtrasKey = "MvxLaunchData";
         private const string SubViewModelKey = "MvxSubViewModelKey";
@@ -39,49 +32,62 @@ namespace Cirrious.MvvmCross.Droid.Views
 
         #region Implementation of IMvxAndroidViewModelRequestTranslator
 
-        public virtual IMvxViewModel Load(Intent intent)
+        public virtual IMvxViewModel Load(Intent intent, IMvxBundle savedState)
         {
             return Load(intent, null);
         }
 
-        public virtual IMvxViewModel Load(Intent intent, Type viewModelTypeHint)
+        public virtual IMvxViewModel Load(Intent intent, IMvxBundle savedState, Type viewModelTypeHint)
         {
             if (intent == null)
             {
-                // TODO - some trace here would be nice...
+                MvxTrace.Error( "Null Intent seen when creating ViewModel");
                 return null;
             }
 
             if (intent.Action == Intent.ActionMain)
             {
-                // TODO - some trace here would be nice...
-                return Activator.CreateInstance(viewModelTypeHint) as IMvxViewModel;
+                MvxTrace.Trace("Creating ViewModel for ActionMain");
+                var loaderService = Mvx.Resolve<IMvxViewModelLoader>();
+                var viewModelRequest = MvxViewModelRequest.GetDefaultRequest(viewModelTypeHint);
+                var viewModel = loaderService.LoadViewModel(viewModelRequest, savedState);
+                return viewModel;
             }
 
             if (intent.Extras == null)
             {
-                // TODO - some trace here would be nice...
+                MvxTrace.Error(
+                               "Null Extras seen on Intent when creating ViewModel - this should not happen - have you tried to navigate to an MvvmCross View directly?");
                 return null;
             }
 
             IMvxViewModel mvxViewModel;
             if (TryGetEmbeddedViewModel(intent, out mvxViewModel))
+            {
+                MvxTrace.Trace("Embedded ViewModel used");
                 return mvxViewModel;
+            }
 
-            return CreateViewModelFromIntent(intent);
+            MvxTrace.Trace("Loading new ViewModel from Intent with Extras");
+            return CreateViewModelFromIntent(intent, savedState);
         }
 
-        private IMvxViewModel CreateViewModelFromIntent(Intent intent)
+        private IMvxViewModel CreateViewModelFromIntent(Intent intent, IMvxBundle savedState)
         {
             var extraData = intent.Extras.GetString(ExtrasKey);
             if (extraData == null)
                 return null;
 
-            var converter = this.GetService<IMvxTextSerializer>();
-            var viewModelRequest = converter.DeserializeObject<MvxShowViewModelRequest>(extraData);
+            var converter = Mvx.Resolve<IMvxNavigationSerializer>();
+            var viewModelRequest = converter.Serializer.DeserializeObject<MvxViewModelRequest>(extraData);
 
-            var loaderService = this.GetService<IMvxViewModelLoader>();
-            var viewModel = loaderService.LoadViewModel(viewModelRequest);
+            return ViewModelFromRequest(viewModelRequest, savedState);
+        }
+
+        private IMvxViewModel ViewModelFromRequest(MvxViewModelRequest viewModelRequest, IMvxBundle savedState)
+        {
+            var loaderService = Mvx.Resolve<IMvxViewModelLoader>();
+            var viewModel = loaderService.LoadViewModel(viewModelRequest, savedState);
             return viewModel;
         }
 
@@ -91,7 +97,7 @@ namespace Cirrious.MvvmCross.Droid.Views
             if (embeddedViewModelKey != 0)
             {
                 {
-                    mvxViewModel = this.GetService<IMvxAndroidSubViewModelCache>().Get(embeddedViewModelKey);
+                    mvxViewModel = Mvx.Resolve<IMvxChildViewModelCache>().Get(embeddedViewModelKey);
                     return true;
                 }
             }
@@ -99,7 +105,7 @@ namespace Cirrious.MvvmCross.Droid.Views
             return false;
         }
 
-        public virtual Intent GetIntentFor(MvxShowViewModelRequest request)
+        public virtual Intent GetIntentFor(MvxViewModelRequest request)
         {
             var viewType = GetViewType(request.ViewModelType);
             if (viewType == null)
@@ -107,24 +113,32 @@ namespace Cirrious.MvvmCross.Droid.Views
                 throw new MvxException("View Type not found for " + request.ViewModelType);
             }
 
-            var converter = this.GetService<IMvxTextSerializer>();
-            var requestText = converter.SerializeObject(request);
+            var converter = Mvx.Resolve<IMvxNavigationSerializer>();
+            var requestText = converter.Serializer.SerializeObject(request);
 
             var intent = new Intent(_applicationContext, viewType);
             intent.PutExtra(ExtrasKey, requestText);
-#warning ClearTop is not enough :/ Need to work on an Intent based scheme like http://stackoverflow.com/questions/3007998/on-logout-clear-activity-history-stack-preventing-back-button-from-opening-l
-            if (request.ClearTop)
-                intent.AddFlags(ActivityFlags.ClearTop);
+
+            AdjustIntentForPresentation(intent, request);
+
             intent.AddFlags(ActivityFlags.NewTask);
             return intent;
         }
 
+        protected virtual void AdjustIntentForPresentation(Intent intent, MvxViewModelRequest request)
+        {
+#warning we want to do things here... clear top, remove history item, etc
+//#warning ClearTop is not enough :/ Need to work on an Intent based scheme like http://stackoverflow.com/questions/3007998/on-logout-clear-activity-history-stack-preventing-back-button-from-opening-l
+//            if (request.ClearTop)
+//                intent.AddFlags(ActivityFlags.ClearTop);
+        }
+
         public virtual Tuple<Intent, int> GetIntentWithKeyFor(IMvxViewModel viewModel)
         {
-            var request = MvxShowViewModelRequest.GetDefaultRequest(viewModel.GetType());
+            var request = MvxViewModelRequest.GetDefaultRequest(viewModel.GetType());
             var intent = GetIntentFor(request);
 
-            var key = this.GetService<IMvxAndroidSubViewModelCache>().Cache(viewModel);
+            var key = Mvx.Resolve<IMvxChildViewModelCache>().Cache(viewModel);
             intent.PutExtra(SubViewModelKey, key);
 
             return new Tuple<Intent, int>(intent, key);
@@ -132,7 +146,7 @@ namespace Cirrious.MvvmCross.Droid.Views
 
         public void RemoveSubViewModelWithKey(int key)
         {
-            this.GetService<IMvxAndroidSubViewModelCache>().Remove(key);
+            Mvx.Resolve<IMvxChildViewModelCache>().Remove(key);
         }
 
         #endregion

@@ -93,38 +93,41 @@
     <Compile Include="..\Cirrious.MvvmCross.WindowsPhone\Commands\MvxSelectionChangedEventToCommand.cs">
       <Link>Commands\MvxSelectionChangedEventToCommand.cs</Link>
     </Compile>
+    <Compile Include="..\Cirrious.MvvmCross.WindowsPhone\Commands\MvxSimpleSelectionChangedEventArgs.cs">
+      <Link>Commands\MvxSimpleSelectionChangedEventArgs.cs</Link>
+    </Compile>
+    <Compile Include="..\Cirrious.MvvmCross.WindowsPhone\Commands\MvxSingleSelectionChangedEventToCommand.cs">
+      <Link>Commands\MvxSingleSelectionChangedEventToCommand.cs</Link>
+    </Compile>
     <Compile Include="..\Cirrious.MvvmCross.WindowsPhone\Commands\MvxWithArgsEventToCommand.cs">
       <Link>Commands\MvxWithArgsEventToCommand.cs</Link>
-    </Compile>
-    <Compile Include="..\Cirrious.MvvmCross.WindowsPhone\ExtensionMethods\MvxUriExtensionMethods.cs">
-      <Link>ExtensionMethods\MvxUriExtensionMethods.cs</Link>
-    </Compile>
-    <Compile Include="..\Cirrious.MvvmCross.WindowsPhone\Interfaces\IMvxWindowsPhoneView.cs">
-      <Link>Interfaces\IMvxWindowsPhoneView.cs</Link>
-    </Compile>
-    <Compile Include="..\Cirrious.MvvmCross.WindowsPhone\Interfaces\IMvxWindowsPhoneViewModelRequestTranslator.cs">
-      <Link>Interfaces\IMvxWindowsPhoneViewModelRequestTranslator.cs</Link>
-    </Compile>
-    <Compile Include="..\Cirrious.MvvmCross.WindowsPhone\Platform\Converters\MvxNativeValueConverter.cs">
-      <Link>Platform\Converters\MvxNativeValueConverter.cs</Link>
-    </Compile>
-    <Compile Include="..\Cirrious.MvvmCross.WindowsPhone\Platform\Lifetime\MvxWindowsPhoneLifetimeMonitor.cs">
-      <Link>Platform\Lifetime\MvxWindowsPhoneLifetimeMonitor.cs</Link>
-    </Compile>
-    <Compile Include="..\Cirrious.MvvmCross.WindowsPhone\Platform\MvxBaseWindowsPhoneSetup.cs">
-      <Link>Platform\MvxBaseWindowsPhoneSetup.cs</Link>
     </Compile>
     <Compile Include="..\Cirrious.MvvmCross.WindowsPhone\Platform\MvxDebugTrace.cs">
       <Link>Platform\MvxDebugTrace.cs</Link>
     </Compile>
-    <Compile Include="..\Cirrious.MvvmCross.WindowsPhone\Platform\Tasks\MvxWindowsPhoneTask.cs">
-      <Link>Platform\Tasks\MvxWindowsPhoneTask.cs</Link>
+    <Compile Include="..\Cirrious.MvvmCross.WindowsPhone\Platform\MvxPhoneLifetimeMonitor.cs">
+      <Link>Platform\MvxPhoneLifetimeMonitor.cs</Link>
     </Compile>
-    <Compile Include="..\Cirrious.MvvmCross.WindowsPhone\Views\MvxMainThreadDispatcher.cs">
-      <Link>Views\MvxMainThreadDispatcher.cs</Link>
+    <Compile Include="..\Cirrious.MvvmCross.WindowsPhone\Platform\MvxPhoneSetup.cs">
+      <Link>Platform\MvxPhoneSetup.cs</Link>
+    </Compile>
+    <Compile Include="..\Cirrious.MvvmCross.WindowsPhone\Platform\MvxUriExtensionMethods.cs">
+      <Link>Platform\MvxUriExtensionMethods.cs</Link>
+    </Compile>
+    <Compile Include="..\Cirrious.MvvmCross.WindowsPhone\Views\IMvxPhoneView.cs">
+      <Link>Views\IMvxPhoneView.cs</Link>
+    </Compile>
+    <Compile Include="..\Cirrious.MvvmCross.WindowsPhone\Views\IMvxPhoneViewModelRequestTranslator.cs">
+      <Link>Views\IMvxPhoneViewModelRequestTranslator.cs</Link>
+    </Compile>
+    <Compile Include="..\Cirrious.MvvmCross.WindowsPhone\Views\IMvxPhoneViewPresenter.cs">
+      <Link>Views\IMvxPhoneViewPresenter.cs</Link>
     </Compile>
     <Compile Include="..\Cirrious.MvvmCross.WindowsPhone\Views\MvxPhoneExtensionMethods.cs">
       <Link>Views\MvxPhoneExtensionMethods.cs</Link>
+    </Compile>
+    <Compile Include="..\Cirrious.MvvmCross.WindowsPhone\Views\MvxPhoneMainThreadDispatcher.cs">
+      <Link>Views\MvxPhoneMainThreadDispatcher.cs</Link>
     </Compile>
     <Compile Include="..\Cirrious.MvvmCross.WindowsPhone\Views\MvxPhonePage.cs">
       <Link>Views\MvxPhonePage.cs</Link>
@@ -135,8 +138,8 @@
     <Compile Include="..\Cirrious.MvvmCross.WindowsPhone\Views\MvxPhoneViewDispatcher.cs">
       <Link>Views\MvxPhoneViewDispatcher.cs</Link>
     </Compile>
-    <Compile Include="..\Cirrious.MvvmCross.WindowsPhone\Views\MvxPhoneViewDispatcherProvider.cs">
-      <Link>Views\MvxPhoneViewDispatcherProvider.cs</Link>
+    <Compile Include="..\Cirrious.MvvmCross.WindowsPhone\Views\MvxPhoneViewPresenter.cs">
+      <Link>Views\MvxPhoneViewPresenter.cs</Link>
     </Compile>
     <Compile Include="..\Cirrious.MvvmCross.WindowsPhone\Views\MvxPhoneViewsContainer.cs">
       <Link>Views\MvxPhoneViewsContainer.cs</Link>
@@ -146,8 +149,18 @@
   <ItemGroup>
     <Reference Include="System.Windows.Interactivity, Version=3.9.5.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
   </ItemGroup>
-  <ItemGroup />
   <ItemGroup>
+    <Folder Include="ExtensionMethods\" />
+    <Folder Include="Interfaces\" />
+    <Folder Include="Platform\Converters\" />
+    <Folder Include="Platform\Lifetime\" />
+    <Folder Include="Platform\Tasks\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\CrossCore\Cirrious.CrossCore\Cirrious.CrossCore.csproj">
+      <Project>{CFF6F25A-3C3B-44EE-A54C-2ED4AAFF3ADB}</Project>
+      <Name>Cirrious.CrossCore</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Cirrious.MvvmCross\Cirrious.MvvmCross.csproj">
       <Project>{B6E27475-E7D0-448C-A5CC-5097DCA1E2DD}</Project>
       <Name>Cirrious.MvvmCross</Name>

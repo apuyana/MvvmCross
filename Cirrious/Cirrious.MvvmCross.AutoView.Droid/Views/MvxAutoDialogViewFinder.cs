@@ -6,15 +6,14 @@
 // Project Lead - Stuart Lodge, @slodge, me@slodge.com
 
 using System;
+using Cirrious.CrossCore;
 using Cirrious.MvvmCross.AutoView.Droid.Views.Dialog;
 using Cirrious.MvvmCross.AutoView.Interfaces;
-using Cirrious.MvvmCross.ExtensionMethods;
-using Cirrious.MvvmCross.Interfaces.ServiceProvider;
-using Cirrious.MvvmCross.Interfaces.Views;
+using Cirrious.MvvmCross.Views;
 
 namespace Cirrious.MvvmCross.AutoView.Droid.Views
 {
-    public class MvxAutoDialogViewFinder : IMvxViewFinder, IMvxServiceConsumer
+    public class MvxAutoDialogViewFinder : IMvxViewFinder
     {
         public Type DialogViewType { get; set; }
 
@@ -31,7 +30,7 @@ namespace Cirrious.MvvmCross.AutoView.Droid.Views
                 return DialogViewType;
             }
 
-            var loader = this.GetService<IMvxAutoViewTextLoader>();
+            var loader = Mvx.Resolve<IMvxAutoViewTextLoader>();
             if (loader.HasDefinition(viewModelType, MvxAutoViewConstants.Dialog))
             {
                 return DialogViewType;

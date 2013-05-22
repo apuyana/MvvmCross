@@ -7,12 +7,14 @@
 // </copyright>
 // 
 // Project Lead - Stuart Lodge, Cirrious. http://www.cirrious.com
+using Cirrious.CrossCore.Interfaces.Platform.Diagnostics;
+
+
 #endregion
 
 using System;
-using Cirrious.MvvmCross.Interfaces.Platform.Diagnostics;
 
-namespace Cirrious.MvvmCross.Touch.Platform
+namespace Cirrious.MvvmCross.Mac.Platform
 {
     public class MvxDebugTrace : IMvxTrace
     {

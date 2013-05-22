@@ -5,21 +5,18 @@
 // 
 // Project Lead - Stuart Lodge, @slodge, me@slodge.com
 
-using Cirrious.MvvmCross.ExtensionMethods;
-using Cirrious.MvvmCross.Interfaces.ServiceProvider;
-using Cirrious.MvvmCross.Interfaces.ViewModels;
-using Cirrious.MvvmCross.Interfaces.Views;
+using Cirrious.CrossCore;
+using Cirrious.MvvmCross.ViewModels;
 
 namespace Cirrious.MvvmCross.Console.Views
 {
     public class MvxConsoleSystemMessageHandler
-        : IMvxServiceConsumer
     {
         public bool ExitFlag { get; set; }
 
-        private IMvxViewDispatcher ViewDispatcher
+        private IMvxConsoleNavigation ConsoleNavigation
         {
-			get { return this.GetService<IMvxViewDispatcherProvider>().Dispatcher; }
+            get { return Mvx.Resolve<IMvxConsoleNavigation>(); }
         }
 
         public virtual bool HandleInput(IMvxViewModel viewModel, string input)
@@ -29,7 +26,8 @@ namespace Cirrious.MvvmCross.Console.Views
             {
                 case "BACK":
                 case "B":
-                    ViewDispatcher.RequestClose(viewModel);
+                    if (ConsoleNavigation.CanGoBack())
+                        ConsoleNavigation.GoBack();
                     return true;
                 case "QUIT":
                 case "Q":

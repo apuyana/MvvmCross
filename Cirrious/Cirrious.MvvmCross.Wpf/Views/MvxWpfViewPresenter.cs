@@ -7,40 +7,36 @@
 
 using System;
 using System.Windows;
-using Cirrious.MvvmCross.ExtensionMethods;
-using Cirrious.MvvmCross.Interfaces.ServiceProvider;
-using Cirrious.MvvmCross.Interfaces.ViewModels;
-using Cirrious.MvvmCross.Interfaces.Views;
-using Cirrious.MvvmCross.Platform.Diagnostics;
-using Cirrious.MvvmCross.Views;
-using Cirrious.MvvmCross.Wpf.Interfaces;
+using Cirrious.CrossCore.Exceptions;
+using Cirrious.CrossCore;
+using Cirrious.CrossCore.Platform;
+using Cirrious.MvvmCross.ViewModels;
 
 namespace Cirrious.MvvmCross.Wpf.Views
 {
     public abstract class MvxWpfViewPresenter
         : IMvxWpfViewPresenter
-        , IMvxServiceConsumer
     {
-        public void Show(MvxShowViewModelRequest request)
+        public void Show(MvxViewModelRequest request)
         {
             try
             {
-                var loader = this.GetService<IMvxSimpleWpfViewLoader>();
+                var loader = Mvx.Resolve<IMvxSimpleWpfViewLoader>();
                 var view = loader.CreateView(request);
                 Present(view);
             }
             catch (Exception exception)
             {
-                MvxTrace.Trace("Error seen during navigation request to {0} - error {1}", request.ViewModelType.Name,
+                MvxTrace.Error("Error seen during navigation request to {0} - error {1}", request.ViewModelType.Name,
                                exception.ToLongString());
             }
         }
 
         public abstract void Present(FrameworkElement frameworkElement);
 
-        public void Close(IMvxViewModel viewModel)
+        public virtual void ChangePresentation(MvxPresentationHint hint)
         {
-            throw new NotImplementedException("Need to consider what to do here");
+            MvxTrace.Warning("Hint ignored {0}", hint.GetType().Name);
         }
     }
 }

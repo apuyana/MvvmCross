@@ -9,19 +9,22 @@ using System.Collections.Generic;
 using Android.Content;
 using Android.Views;
 using Cirrious.MvvmCross.AutoView.Droid.Interfaces.Lists;
-using Cirrious.MvvmCross.Binding.Droid.Interfaces.Views;
-using Cirrious.MvvmCross.Interfaces.ServiceProvider;
+using Cirrious.MvvmCross.Binding.Droid.BindingContext;
 
 namespace Cirrious.MvvmCross.AutoView.Droid.Views.Lists
 {
     public class GeneralListItemViewFactory
         : IMvxLayoutListItemViewFactory
-          , IMvxServiceConsumer
+
     {
-        public View BuildView(Context context, IMvxBindingActivity bindingActivity, object source)
+        public View BuildView(Context context, IMvxAndroidBindingContext androidBindingContext, object source)
         {
-            var view = new GeneralListItemView(context, bindingActivity, LayoutName, source);
-            view.BindProperties(source, Bindings); //.ToDictionary(x => x.Key, x => x.Value.ToString()));
+            var view = new GeneralListItemView(
+                context,
+                androidBindingContext.LayoutInflater,
+                Bindings,
+                source,
+                LayoutName);
             return view;
         }
 

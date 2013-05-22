@@ -6,38 +6,37 @@
 // Project Lead - Stuart Lodge, @slodge, me@slodge.com
 
 using System;
-using Cirrious.MvvmCross.ExtensionMethods;
-using Cirrious.MvvmCross.Interfaces.ViewModels;
-using Cirrious.MvvmCross.Interfaces.Views;
-using Cirrious.MvvmCross.WindowsPhone.Interfaces;
+using Cirrious.CrossCore.Exceptions;
+using Cirrious.CrossCore;
+using Cirrious.MvvmCross.ViewModels;
+using Cirrious.MvvmCross.Views;
 
 namespace Cirrious.MvvmCross.WindowsPhone.Views
 {
     public static class MvxPhoneExtensionMethods
     {
-        public static void OnViewCreate<TViewModel>(this IMvxWindowsPhoneView<TViewModel> phoneView, Uri navigationUri)
-            where TViewModel : class, IMvxViewModel
+        public static void OnViewCreate(this IMvxPhoneView phoneView, Uri navigationUri, IMvxBundle savedStateBundle)
         {
-            var view = phoneView as IMvxView<TViewModel>;
-            view.OnViewCreate(() => { return phoneView.LoadViewModel(navigationUri); });
+            phoneView.OnViewCreate(() => { return phoneView.LoadViewModel(navigationUri, savedStateBundle); });
         }
 
-        private static TViewModel LoadViewModel<TViewModel>(this IMvxWindowsPhoneView<TViewModel> phoneView,
-                                                            Uri navigationUri)
-            where TViewModel : class, IMvxViewModel
+        private static IMvxViewModel LoadViewModel(this IMvxPhoneView phoneView,
+                                                   Uri navigationUri,
+                                                   IMvxBundle savedStateBundle)
         {
-            var translatorService = phoneView.GetService<IMvxWindowsPhoneViewModelRequestTranslator>();
+            var translatorService = Mvx.Resolve<IMvxPhoneViewModelRequestTranslator>();
             var viewModelRequest = translatorService.GetRequestFromXamlUri(navigationUri);
 
-            if (viewModelRequest.ClearTop)
-            {
-                phoneView.ClearBackStack();
-            }
+#warning ClearingBackStack disabled for now
+            //if (viewModelRequest.ClearTop)
+            //{
+            //    phoneView.ClearBackStack();
+            //}
 
-            var loaderService = phoneView.GetService<IMvxViewModelLoader>();
-            var viewModel = loaderService.LoadViewModel(viewModelRequest);
+            var loaderService = Mvx.Resolve<IMvxViewModelLoader>();
+            var viewModel = loaderService.LoadViewModel(viewModelRequest, savedStateBundle);
 
-            return (TViewModel) viewModel;
+            return viewModel;
         }
     }
 }

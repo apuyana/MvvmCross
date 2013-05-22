@@ -7,41 +7,35 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using Android.Content;
+using Android.Content.Res;
 using Android.Util;
 using Android.Views;
-using Cirrious.MvvmCross.Binding.Droid.ExtensionMethods;
-using Cirrious.MvvmCross.Binding.Droid.Interfaces.Binders;
-using Cirrious.MvvmCross.Binding.Interfaces;
-using Cirrious.MvvmCross.ExtensionMethods;
-using Cirrious.MvvmCross.Interfaces.Platform.Diagnostics;
-using Cirrious.MvvmCross.Interfaces.ServiceProvider;
-using Exception = System.Exception;
-using Object = Java.Lang.Object;
+using Cirrious.CrossCore.Exceptions;
+using Cirrious.CrossCore;
+using Cirrious.CrossCore.Platform;
+using Cirrious.MvvmCross.Binding.Binders;
+using Cirrious.MvvmCross.Binding.Bindings;
 
 namespace Cirrious.MvvmCross.Binding.Droid.Binders
 {
     public class MvxBindingLayoutInflatorFactory
-        : Object
+        : Java.Lang.Object
           , LayoutInflater.IFactory
-          , IMvxServiceConsumer
     {
-        private readonly LayoutInflater _layoutInflater;
         private readonly object _source;
 
-        private readonly Dictionary<View, IList<IMvxUpdateableBinding>> _viewBindings
-            = new Dictionary<View, IList<IMvxUpdateableBinding>>();
+        private readonly List<IMvxUpdateableBinding> _viewBindings
+            = new List<IMvxUpdateableBinding>();
 
         private IMvxViewTypeResolver _viewTypeResolver;
+        private IMvxBinder _binder;
 
         public MvxBindingLayoutInflatorFactory(
-            object source,
-            LayoutInflater layoutInflater)
+            object source)
         {
             _source = source;
-            _layoutInflater = layoutInflater;
         }
 
         private IMvxViewTypeResolver ViewTypeResolver
@@ -49,9 +43,24 @@ namespace Cirrious.MvvmCross.Binding.Droid.Binders
             get
             {
                 if (_viewTypeResolver == null)
-                    _viewTypeResolver = this.GetService<IMvxViewTypeResolver>();
+                    _viewTypeResolver = Mvx.Resolve<IMvxViewTypeResolver>();
                 return _viewTypeResolver;
             }
+        }
+
+        private IMvxBinder Binder
+        {
+            get
+            {
+                if (_binder == null)
+                    _binder = Mvx.Resolve<IMvxBinder>();
+                return _binder;
+            }
+        }
+
+        public List<IMvxUpdateableBinding> CreatedBindings
+        {
+            get { return _viewBindings; }
         }
 
         #region IFactory Members
@@ -83,25 +92,51 @@ namespace Cirrious.MvvmCross.Binding.Droid.Binders
 
                     if (attributeId == MvxAndroidBindingResource.Instance.BindingBindId)
                     {
-                        try
-                        {
-                            var bindingText = typedArray.GetString(attributeId);
-                            var newBindings = this.GetService<IMvxBinder>().Bind(_source, view, bindingText);
-                            if (newBindings != null)
-                            {
-                                var asList = newBindings.ToList();
-                                _viewBindings[view] = asList;
-                            }
-                        }
-                        catch (Exception exception)
-                        {
-                            MvxBindingTrace.Trace(MvxTraceLevel.Error, "Exception thrown during the view binding {0}",
-                                                  exception.ToLongString());
-                            throw;
-                        }
+                        ApplyBindingsFromAttribute(view, typedArray, attributeId);
+                    }
+                    else if (attributeId == MvxAndroidBindingResource.Instance.BindingLangId)
+                    {
+                        ApplyLanguageBindingsFromAttribute(view, typedArray, attributeId);
                     }
                 }
                 typedArray.Recycle();
+            }
+        }
+
+        private void ApplyBindingsFromAttribute(View view, TypedArray typedArray, int attributeId)
+        {
+            try
+            {
+                var bindingText = typedArray.GetString(attributeId);
+                var newBindings = Binder.Bind(_source, view, bindingText);
+                if (newBindings != null)
+                {
+                    _viewBindings.AddRange(newBindings);
+                }
+            }
+            catch (Exception exception)
+            {
+                MvxBindingTrace.Trace(MvxTraceLevel.Error, "Exception thrown during the view binding {0}",
+                                      exception.ToLongString());
+            }
+        }
+
+        private void ApplyLanguageBindingsFromAttribute(View view, TypedArray typedArray, int attributeId)
+        {
+            try
+            {
+                var bindingText = typedArray.GetString(attributeId);
+                var newBindings = Binder.LanguageBind(_source, view, bindingText);
+                if (newBindings != null)
+                {
+                    _viewBindings.AddRange(newBindings);
+                }
+            }
+            catch (Exception exception)
+            {
+                MvxBindingTrace.Trace(MvxTraceLevel.Error, "Exception thrown during the view language binding {0}",
+                                      exception.ToLongString());
+                throw;
             }
         }
 
@@ -137,11 +172,6 @@ namespace Cirrious.MvvmCross.Binding.Droid.Binders
                                       viewType.FullName, exception.ToLongString());
                 return null;
             }
-        }
-
-        public void StoreBindings(View view)
-        {
-            view.StoreBindings(_viewBindings);
         }
     }
 }

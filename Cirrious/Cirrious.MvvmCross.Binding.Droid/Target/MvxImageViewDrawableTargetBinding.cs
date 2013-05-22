@@ -6,57 +6,44 @@
 // Project Lead - Stuart Lodge, @slodge, me@slodge.com
 
 using System;
-using Android.Graphics.Drawables;
+using System.IO;
 using Android.Widget;
-using Cirrious.MvvmCross.Binding.Interfaces;
-using Cirrious.MvvmCross.Interfaces.Platform.Diagnostics;
+using Cirrious.CrossCore.Platform;
 
 namespace Cirrious.MvvmCross.Binding.Droid.Target
 {
     public class MvxImageViewDrawableTargetBinding
-        : MvxBaseAndroidTargetBinding
+        : MvxBaseStreamImageViewTargetBinding
     {
-        private readonly ImageView _imageView;
-
         public MvxImageViewDrawableTargetBinding(ImageView imageView)
+            : base(imageView)
         {
-            _imageView = imageView;
-        }
-
-        public override MvxBindingMode DefaultMode
-        {
-            get { return MvxBindingMode.OneWay; }
         }
 
         public override Type TargetType
         {
-            get { return typeof (string); }
+            get { return typeof (int); }
         }
 
-        public override void SetValue(object value)
+        protected override Stream GetStream(object value)
         {
-            if (value == null)
+            if (!(value is int))
             {
-                MvxBindingTrace.Trace(MvxTraceLevel.Warning, "Null value passed to ImageView binding");
-                return;
+                MvxBindingTrace.Trace(MvxTraceLevel.Warning,
+                                      "Value '{0}' could not be parsed as a valid integer identifier", value);
+                return null;
             }
 
-            var stringValue = value as string;
-            if (string.IsNullOrWhiteSpace(stringValue))
+            var resources = AndroidGlobals.ApplicationContext.Resources;
+            var stream = resources.OpenRawResource((int) value);
+
+            if (stream == null)
             {
-                MvxBindingTrace.Trace(MvxTraceLevel.Warning, "Empty value passed to ImageView binding");
-                return;
+                MvxBindingTrace.Trace(MvxTraceLevel.Warning, "Could not find a drawable with id '{0}'", value);
+                return null;
             }
 
-            var drawableResourceName = GetImageAssetName(stringValue);
-            var assetStream = AndroidGlobals.ApplicationContext.Assets.Open(drawableResourceName);
-            Drawable drawable = Drawable.CreateFromStream(assetStream, null);
-            _imageView.SetImageDrawable(drawable);
-        }
-
-        private static string GetImageAssetName(string rawImage)
-        {
-            return rawImage.TrimStart('/');
+            return stream;
         }
     }
 }

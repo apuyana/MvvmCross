@@ -6,7 +6,6 @@
 // Project Lead - Stuart Lodge, @slodge, me@slodge.com
 
 using System.Windows.Controls;
-using Cirrious.MvvmCross.Commands;
 
 namespace Cirrious.MvvmCross.WindowsPhone.Commands
 {

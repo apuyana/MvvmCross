@@ -6,25 +6,25 @@
 // Project Lead - Stuart Lodge, @slodge, me@slodge.com
 
 using System;
-using Cirrious.MvvmCross.AutoView.Touch.Interfaces;
+using Cirrious.CrossCore.Exceptions;
+using Cirrious.CrossCore;
+using Cirrious.CrossCore.Platform;
 using Cirrious.MvvmCross.Binding;
-using Cirrious.MvvmCross.Binding.Interfaces;
-using Cirrious.MvvmCross.ExtensionMethods;
-using Cirrious.MvvmCross.Interfaces.Platform.Diagnostics;
-using Cirrious.MvvmCross.Interfaces.ServiceProvider;
+using Cirrious.MvvmCross.Binding.Binders;
+using Cirrious.MvvmCross.Touch.Views;
 using CrossUI.Core.Builder;
 
 namespace Cirrious.MvvmCross.AutoView.Touch.Builders
 {
     public class MvxBindingPropertySetter : IPropertySetter
-                                            , IMvxServiceConsumer
+
     {
-        private readonly IMvxBindingViewController _bindingActivity;
+        private readonly IMvxTouchView _touchView;
         private readonly object _source;
 
-        public MvxBindingPropertySetter(IMvxBindingViewController bindingActivity, object source)
+        public MvxBindingPropertySetter(IMvxTouchView touchView, object source)
         {
-            _bindingActivity = bindingActivity;
+            _touchView = touchView;
             _source = source;
         }
 
@@ -32,9 +32,9 @@ namespace Cirrious.MvvmCross.AutoView.Touch.Builders
         {
             try
             {
-                var binding = this.GetService<IMvxBinder>()
-                                  .BindSingle(_source, element, targetPropertyName, configuration);
-                _bindingActivity.RegisterBinding(binding);
+                var binding = Mvx.Resolve<IMvxBinder>()
+                                 .BindSingle(_source, element, targetPropertyName, configuration);
+                _touchView.BindingContext.RegisterBinding(binding);
             }
             catch (Exception exception)
             {
